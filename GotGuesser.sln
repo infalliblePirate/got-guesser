@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35303.130
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotGuesser.Server", "GotGuesser.Server\GotGuesser.Server.csproj", "{D32FF954-D4F1-46E0-96EA-7DFB96976D9C}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "gotguesser.client", "gotguesser.client\gotguesser.client.esproj", "{95E9748D-AFF4-4917-95EA-CCA1472C418E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D32FF954-D4F1-46E0-96EA-7DFB96976D9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32FF954-D4F1-46E0-96EA-7DFB96976D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32FF954-D4F1-46E0-96EA-7DFB96976D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32FF954-D4F1-46E0-96EA-7DFB96976D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95E9748D-AFF4-4917-95EA-CCA1472C418E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D384135-A431-4EA1-BC59-2EB5F5F9749C}
+	EndGlobalSection
+EndGlobal
