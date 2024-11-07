@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-
-namespace GotExplorer.Server.Controllers
+using GotExplorer.DAL.Models;
+namespace GotExplorer.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

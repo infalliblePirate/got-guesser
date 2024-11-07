@@ -20,9 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GotExplorer.BLL\GotExplorer.BLL.csproj" />
     <ProjectReference Include="..\gotexplorer.client\gotexplorer.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\GotExplorer.DAL\GotExplorer.DAL.csproj" />
   </ItemGroup>
 
 </Project>

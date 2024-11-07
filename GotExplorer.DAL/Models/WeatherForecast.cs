@@ -1,4 +1,4 @@
-namespace GotExplorer.Server
+namespace GotExplorer.DAL.Models
 {
     public class WeatherForecast
     {

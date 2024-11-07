@@ -1,5 +1,5 @@
 
-namespace GotExplorer.Server
+namespace GotExplorer.API
 {
     public class Program
     {
