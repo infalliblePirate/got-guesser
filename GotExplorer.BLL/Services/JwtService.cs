@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using GotExplorer.DAL.Models;
+using GotExplorer.DAL.Entities;
 using GotExplorer.BLL.Services.Interfaces;
 namespace GotExplorer.BLL.Services
 {

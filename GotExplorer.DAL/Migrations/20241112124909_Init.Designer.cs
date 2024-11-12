@@ -3,6 +3,7 @@ using System;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GotExplorer.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241112124909_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("GameLevel");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Game", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,7 +68,7 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,17 +87,9 @@ namespace GotExplorer.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "",
-                            Path = ""
-                        });
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Level", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.Level", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +112,7 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("Levels");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Model3D", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.Model3D", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +133,7 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("Models3D");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,7 +205,7 @@ namespace GotExplorer.DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.UserRole", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.UserRole", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -359,22 +354,22 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("GameLevel", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.Game", null)
+                    b.HasOne("GotExplorer.DAL.Models.Game", null)
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GotExplorer.DAL.Entities.Level", null)
+                    b.HasOne("GotExplorer.DAL.Models.Level", null)
                         .WithMany()
                         .HasForeignKey("LevelsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.Game", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.Game", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.User", "User")
+                    b.HasOne("GotExplorer.DAL.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -383,9 +378,9 @@ namespace GotExplorer.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
+            modelBuilder.Entity("GotExplorer.DAL.Models.User", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.Image", "Image")
+                    b.HasOne("GotExplorer.DAL.Models.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,13 +391,13 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("LevelModel3D", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.Level", null)
+                    b.HasOne("GotExplorer.DAL.Models.Level", null)
                         .WithMany()
                         .HasForeignKey("LevelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GotExplorer.DAL.Entities.Model3D", null)
+                    b.HasOne("GotExplorer.DAL.Models.Model3D", null)
                         .WithMany()
                         .HasForeignKey("ModelsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,7 +406,7 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.UserRole", null)
+                    b.HasOne("GotExplorer.DAL.Models.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,7 +415,7 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.User", null)
+                    b.HasOne("GotExplorer.DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -429,7 +424,7 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.User", null)
+                    b.HasOne("GotExplorer.DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -438,13 +433,13 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.UserRole", null)
+                    b.HasOne("GotExplorer.DAL.Models.UserRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GotExplorer.DAL.Entities.User", null)
+                    b.HasOne("GotExplorer.DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -453,7 +448,7 @@ namespace GotExplorer.DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("GotExplorer.DAL.Entities.User", null)
+                    b.HasOne("GotExplorer.DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

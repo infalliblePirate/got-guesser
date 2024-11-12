@@ -10,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
-using GotExplorer.DAL.Models;
+using GotExplorer.DAL.Entities;
 using GotExplorer.BLL.Services.Interfaces;
 namespace GotExplorer.API
 {
@@ -51,7 +51,8 @@ namespace GotExplorer.API
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 8;
-            }).AddEntityFrameworkStores<AppDbContext>();
+            }).AddRoles<UserRole>()
+              .AddEntityFrameworkStores<AppDbContext>();
 
 
             // Add CORS
@@ -147,7 +148,24 @@ namespace GotExplorer.API
 
             app.MapFallbackToFile("/index.html");
 
+            using (var scope = app.Services.CreateScope())
+            {
+                CreateRoles(scope.ServiceProvider).Wait();
+            }
             app.Run();
+        }
+
+        public static async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roles = new[] { "User", "Admin" };
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new UserRole(role));
+                }
+            }
         }
     }
 }

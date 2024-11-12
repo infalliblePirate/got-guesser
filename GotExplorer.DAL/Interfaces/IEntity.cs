@@ -1,6 +1,6 @@
 ﻿namespace GotExplorer.DAL.Interfaces
 {
-    public interface IModel
+    public interface IEntity
     {
         int Id { get; set; }
     }

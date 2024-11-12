@@ -1,7 +1,7 @@
 ﻿using GotExplorer.BLL.DTOs;
-using GotExplorer.BLL.Interfaces;
 using GotExplorer.BLL.Services;
-using GotExplorer.DAL.Models;
+using GotExplorer.BLL.Services.Interfaces;
+using GotExplorer.DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
