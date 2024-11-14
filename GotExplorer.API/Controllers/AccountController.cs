@@ -19,10 +19,10 @@ namespace GotExplorer.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IUserService _authService;
-        public AccountController(IUserService authService)
+        private readonly IUserService _userService;
+        public AccountController(IUserService userService)
         {
-            _authService = authService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -38,21 +38,8 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                var result = await _authService.Register(registerDTO);
-                return Ok(result);
-            }
-            catch (IdentityException ex)
-            {
-                return BadRequest(ex.Errors);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var result = await _userService.Register(registerDTO);
+            return Ok(result);
         }
 
         /// <summary>
@@ -70,23 +57,10 @@ namespace GotExplorer.API.Controllers
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-
-                var result = await _authService.Login(loginDTO);
-                return Ok(result);
-            }
-            catch (UnauthorizedException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var result = await _userService.Login(loginDTO);
+            return Ok(result);
         }
+
         // TODO: Delete endpoint.
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("JwtTest")]
