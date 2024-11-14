@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
 using GotExplorer.DAL.Entities;
+using GotExplorer.API.Middleware;
+using GotExplorer.BLL.Mapper;
 using GotExplorer.BLL.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 namespace GotExplorer.API
@@ -57,11 +59,13 @@ namespace GotExplorer.API
               .AddEntityFrameworkStores<AppDbContext>();
 
             // Add CORS
+
+            var allowedOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.AllowAnyOrigin()
+                    builder.WithOrigins(allowedOrigins)
                            .AllowAnyMethod()
                            .AllowAnyHeader();
                 });
@@ -70,6 +74,12 @@ namespace GotExplorer.API
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.AddExceptionHandler<HttpExceptionHandler>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
+            
+            builder.Services.AddProblemDetails();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -145,7 +155,7 @@ namespace GotExplorer.API
                 app.UseSwaggerUI();
             }
 
-
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseCors();
@@ -156,6 +166,8 @@ namespace GotExplorer.API
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
+
+
 
             using (var scope = app.Services.CreateScope())
             {
