@@ -52,9 +52,9 @@ namespace GotExplorer.API
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 8;
+                options.User.RequireUniqueEmail = true;
             }).AddRoles<UserRole>()
               .AddEntityFrameworkStores<AppDbContext>();
-
 
             // Add CORS
             builder.Services.AddCors(options =>
@@ -69,6 +69,8 @@ namespace GotExplorer.API
 
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -124,6 +126,12 @@ namespace GotExplorer.API
                     options.IncludeXmlComments(xmlDocPath);
                 }
             });
+
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
 
             var app = builder.Build();
 
