@@ -1,4 +1,5 @@
 ﻿using GotExplorer.DAL.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GotExplorer.DAL.Entities
@@ -12,5 +13,8 @@ namespace GotExplorer.DAL.Entities
 
         [Column(TypeName = "VARCHAR(255)")]
         public string Path { get; set; }
+
+        [Timestamp]
+        public uint Version { get; set; }
     }
 }

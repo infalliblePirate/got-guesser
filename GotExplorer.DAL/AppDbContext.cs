@@ -34,6 +34,18 @@ namespace GotExplorer.DAL
                 .HasForeignKey(e => e.UserId)
                 .IsRequired();
 
+            builder.Entity<Image>()
+                .Property(e => e.Version)
+                .IsRowVersion();
+
+            builder.Entity<Model3D>()
+                .Property(e => e.Version)
+                .IsRowVersion();
+
+            builder.Entity<Level>()
+                .Property(e => e.Version)
+                .IsRowVersion();
+
             builder.HasPostgresEnum<GameType>();
 
             builder.Entity<Image>().HasData(
