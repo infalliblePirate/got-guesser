@@ -37,12 +37,9 @@ namespace GotExplorer.BLL.Services
             if (!result.Succeeded)
                 throw new HttpException(StatusCodes.Status401Unauthorized, "Username not found and/or password incorrect");
 
-            return new UserDTO()
-            {
-                Username = user.UserName,
-                Email = user.Email,
-                Token = _jwtService.GenerateToken(user)
-            };
+            var userDto = _mapper.Map<UserDTO>(user);
+            userDto.Token = _jwtService.GenerateToken(user);
+            return userDto;
         }
 
         public async Task<UserDTO> Register(RegisterDTO registerDTO)
@@ -67,12 +64,10 @@ namespace GotExplorer.BLL.Services
                 throw ex;
             }
 
-            return new UserDTO()
-            {
-                Username = user.UserName,
-                Email = user.Email,
-                Token = _jwtService.GenerateToken(user)
-            };
+
+            var userDto = _mapper.Map<UserDTO>(user);
+            userDto.Token = _jwtService.GenerateToken(user);
+            return userDto;
         }
     }
 }

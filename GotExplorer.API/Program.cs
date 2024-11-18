@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using System.Text.Json;
 using GotExplorer.API.Configuration;
+using GotExplorer.BLL.Options;
 namespace GotExplorer.API
 {
     public class Program
@@ -26,7 +27,9 @@ namespace GotExplorer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+            var jwtSection = builder.Configuration.GetSection("Jwt");
+            var jwtOptions = jwtSection.Get<JwtOptions>();
+            builder.Services.Configure<JwtOptions>(jwtSection);
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -37,9 +40,9 @@ namespace GotExplorer.API
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidAudience = jwtSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 };
             });
 

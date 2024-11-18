@@ -9,6 +9,7 @@ namespace GotExplorer.BLL.Mapper
         {
             CreateMap<User, RegisterDTO>().ReverseMap();
             CreateMap<User, LoginDTO>().ReverseMap();
+            CreateMap<User, UserDTO>().ReverseMap();
         }
     }
 }
