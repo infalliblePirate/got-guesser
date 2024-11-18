@@ -1,9 +1,10 @@
-﻿namespace GotExplorer.API.Configuration
+﻿namespace GotExplorer.BLL.Options
 {
-    public class JwtSettings
+    public class JwtOptions
     {
         public string Key { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }
+        public int Expires { get; set; }
     }
 }
