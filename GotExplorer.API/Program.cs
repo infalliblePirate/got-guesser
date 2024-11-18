@@ -15,6 +15,9 @@ using GotExplorer.API.Middleware;
 using GotExplorer.BLL.Mapper;
 using GotExplorer.BLL.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Text.Json;
+using GotExplorer.API.Configuration;
 namespace GotExplorer.API
 {
     public class Program
@@ -23,9 +26,7 @@ namespace GotExplorer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-            var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
-            var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+            var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -36,9 +37,9 @@ namespace GotExplorer.API
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtIssuer,
-                    ValidAudience = jwtAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                 };
             });
 
@@ -59,16 +60,10 @@ namespace GotExplorer.API
               .AddEntityFrameworkStores<AppDbContext>();
 
             // Add CORS
-
-            var allowedOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+            var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.WithOrigins(allowedOrigins)
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
+                options.AddDefaultPolicy(corsSettings.GetPolicy());
             });
 
             // Add services to the container.
@@ -76,7 +71,6 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
-            builder.Services.AddExceptionHandler<HttpExceptionHandler>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
             
             builder.Services.AddProblemDetails();
