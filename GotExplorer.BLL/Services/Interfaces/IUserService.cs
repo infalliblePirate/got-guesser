@@ -4,7 +4,7 @@ namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<string> Register(RegisterDTO registerDTO);
-        Task<string> Login(LoginDTO loginDTO);
+        Task<UserDTO> Register(RegisterDTO registerDTO);
+        Task<UserDTO> Login(LoginDTO loginDTO);
     }
 }

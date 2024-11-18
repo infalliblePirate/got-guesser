@@ -33,9 +33,9 @@ namespace GotExplorer.API.Controllers
         /// <response code="400">Registration failed due to invalid input.</response>
         /// <response code="500">An unexpected error occurred on the server</response>
         [HttpPost("register")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(string), 500)]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _userService.Register(registerDTO);
@@ -51,10 +51,10 @@ namespace GotExplorer.API.Controllers
         /// <response code="401">Authentication failed due to invalid username (or email) and/or password</response>
         /// <response code="500">An unexpected error occurred on the server</response>        
         [HttpPost("login")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(string), 401)]
-        [ProducesResponseType(typeof(string), 500)]
+        [ProducesResponseType(typeof(UserDTO), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 401)]
+        [ProducesResponseType(typeof(ProblemDetails), 500)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var result = await _userService.Login(loginDTO);

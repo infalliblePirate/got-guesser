@@ -25,10 +25,10 @@ namespace GotExplorer.BLL.Services
             _mapper = mapper;
         }
 
-        public async Task<string> Login(LoginDTO loginDTO)
+        public async Task<UserDTO> Login(LoginDTO loginDTO)
         {
             var user = await _userManager.FindByNameAsync(loginDTO.Username) ?? await _userManager.FindByEmailAsync(loginDTO.Username);
-
+            
             if (user == null)
                 throw new HttpException(StatusCodes.Status401Unauthorized,"Username not found and/or password incorrect");
            
@@ -37,10 +37,15 @@ namespace GotExplorer.BLL.Services
             if (!result.Succeeded)
                 throw new HttpException(StatusCodes.Status401Unauthorized, "Username not found and/or password incorrect");
 
-            return _jwtService.GenerateToken(user);
+            return new UserDTO()
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                Token = _jwtService.GenerateToken(user)
+            };
         }
 
-        public async Task<string> Register(RegisterDTO registerDTO)
+        public async Task<UserDTO> Register(RegisterDTO registerDTO)
         {         
             var user = _mapper.Map<User>(registerDTO);
 
@@ -61,8 +66,13 @@ namespace GotExplorer.BLL.Services
                 ex.Data["errors"] = roleResult.Errors;
                 throw ex;
             }
-            
-            return _jwtService.GenerateToken(user);
+
+            return new UserDTO()
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                Token = _jwtService.GenerateToken(user)
+            };
         }
     }
 }
