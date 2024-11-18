@@ -12,6 +12,7 @@ using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
 using GotExplorer.DAL.Entities;
 using GotExplorer.BLL.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 namespace GotExplorer.API
 {
     public class Program
@@ -157,7 +158,7 @@ namespace GotExplorer.API
 
         public static async Task CreateRoles(IServiceProvider serviceProvider)
         {
-            var roles = new[] { "User", "Admin" };
+            var roles = serviceProvider.GetRequiredService<IConfiguration>().GetSection("Roles").Get<string[]>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
             foreach (var role in roles)
             {

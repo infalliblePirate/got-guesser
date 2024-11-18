@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GotExplorer.DAL.Entities
 {
-    public class Image : IEntity
+    public class Image : IEntity<int>
     {
         public int Id { get; set; }
 
-        [Column(TypeName = "VARCHAR(100)")]
+        [MaxLength(100)]
         public string Name { get; set; }
 
-        [Column(TypeName = "VARCHAR(255)")]
+        [MaxLength(255)]
         public string Path { get; set; }
 
         [Timestamp]
