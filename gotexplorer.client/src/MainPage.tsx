@@ -1,4 +1,4 @@
-import "./MainPage.css"
+import "./MainPage.scss"
 function MainPage() {
     return (
         <div className="page">
