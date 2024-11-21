@@ -60,7 +60,8 @@ namespace GotExplorer.API
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             }).AddRoles<UserRole>()
-              .AddEntityFrameworkStores<AppDbContext>();
+              .AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
 
             // Add CORS
             var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
@@ -72,7 +73,10 @@ namespace GotExplorer.API
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
             
