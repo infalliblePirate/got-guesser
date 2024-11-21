@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'GOTfont';
-    src: url("assets/fonts/Game of Thrones.ttf") format('truetype');
+    src: url("../../assets/fonts/Game of Thrones.ttf") format('truetype');
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
@@ -9,15 +9,20 @@
 .page {
     margin: 0;
     padding: 0;
-    background-image: url(assets/images/background.png);
+    background-image: url(../../assets/images/background.png);
 }
 
 .logo {
-    content: url(assets/images/GOTlogo.png);
+    content: url(../../assets/images/GOTlogo.png);
+}
+
+.link {
+    color: inherit;
+    text-decoration: none;
 }
 
 .backg-img {
-    background-image: url("assets/images/throne.jpg");
+    background-image: url("../../assets/images/throne.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -39,7 +44,7 @@
     padding: 0;
 
     .fire-img {
-        content: url(assets/images/fire.png);
+        content: url(../../assets/images/fire.png);
         transform: scaleY(-1);
         position: absolute;
         top: 0%;
@@ -48,7 +53,7 @@
     }
 
     .dragon-img {
-        content: url(assets/images/dragon.png);
+        content: url(../../assets/images/dragon.png);
         transform: rotateY(3.142rad);
         object-fit: fill;
         position: absolute;
@@ -139,9 +144,8 @@ nav {
 }
 
 .bg-img {
-    background-image: url(assets/images/background.png);
+    background-image: url(../../assets/images/background.png);
     grid-row: 6;
     grid-column: 1;
     z-index: -1000;
 }
-
