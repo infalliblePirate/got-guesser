@@ -1,13 +1,12 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import "./MainPage.scss";
 import InfoSection from "./InfoSection";
 import Navigation from "../additional_components/Navigation";
 import Footer from "../additional_components/Footer";
 import TeamPage from "./TeamPage";
+import GoToGame from "./GoToGame";
 const MainPage = () => {
-    const navigate = useNavigate();
-    const handleGameClick = () => navigate("/gotogame");
 
     const location = useLocation();
     useEffect(() => {
@@ -31,9 +30,7 @@ const MainPage = () => {
                         <div className='main-title-font'>
                             you win or you die
                         </div>
-                        <button className='start-btn' onClick={handleGameClick}>
-                            START NOW
-                        </button>
+                        <GoToGame/>
                     </div>
                     <img className='dragon-img' />
                     <img className='fire-img' />
