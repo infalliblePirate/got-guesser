@@ -185,7 +185,9 @@ namespace GotExplorer.DAL.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int>("ImageId")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
