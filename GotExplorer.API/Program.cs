@@ -4,14 +4,21 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.BLL.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using GotExplorer.DAL;
 using Microsoft.EntityFrameworkCore;
-using GotExplorer.DAL.Models;
+using GotExplorer.DAL.Entities;
+using GotExplorer.API.Middleware;
+using GotExplorer.BLL.Mapper;
+using GotExplorer.BLL.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Text.Json;
+using GotExplorer.API.Configuration;
+using GotExplorer.BLL.Options;
 namespace GotExplorer.API
 {
     public class Program
@@ -20,9 +27,9 @@ namespace GotExplorer.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-            var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
-            var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+            var jwtSection = builder.Configuration.GetSection("Jwt");
+            var jwtOptions = jwtSection.Get<JwtOptions>();
+            builder.Services.Configure<JwtOptions>(jwtSection);
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
@@ -33,14 +40,16 @@ namespace GotExplorer.API
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtIssuer,
-                    ValidAudience = jwtAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
                 };
             });
 
-            // TODO: Connect database
-            builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             builder.Services.AddIdentity<User, UserRole>(options =>
             {
@@ -49,22 +58,30 @@ namespace GotExplorer.API
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequiredLength = 8;
-            }).AddEntityFrameworkStores<AppDbContext>();
-
+                options.User.RequireUniqueEmail = true;
+            }).AddRoles<UserRole>()
+              .AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
 
             // Add CORS
+            var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
+                options.AddDefaultPolicy(corsSettings.GetPolicy());
             });
 
             // Add services to the container.
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();     
+            
+            builder.Services.AddProblemDetails();
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -121,6 +138,12 @@ namespace GotExplorer.API
                 }
             });
 
+            builder.Services.Configure<RouteOptions>(options =>
+            {
+                options.LowercaseUrls = true;
+            });
+
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
@@ -133,7 +156,7 @@ namespace GotExplorer.API
                 app.UseSwaggerUI();
             }
 
-
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseCors();
@@ -141,12 +164,30 @@ namespace GotExplorer.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
 
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+                CreateRoles(scope.ServiceProvider).Wait();
+            }
             app.Run();
+        }
+
+        public static async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roles = serviceProvider.GetRequiredService<IConfiguration>().GetSection("Roles").Get<string[]>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<UserRole>>();
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new UserRole(role));
+                }
+            }
         }
     }
 }

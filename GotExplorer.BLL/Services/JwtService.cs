@@ -1,34 +1,36 @@
-﻿using GotExplorer.BLL.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using GotExplorer.DAL.Models;
+using GotExplorer.DAL.Entities;
+using GotExplorer.BLL.Services.Interfaces;
+using GotExplorer.BLL.Options;
+using Microsoft.Extensions.Options;
 namespace GotExplorer.BLL.Services
 {
     public class JwtService : IJwtService
     {
         private IConfiguration _config;
-        public JwtService(IConfiguration config)
+        private readonly JwtOptions _jwtOptions;
+        public JwtService(IOptions<JwtOptions> jwtOptions)
         {
-            _config = config;
+            _jwtOptions = jwtOptions.Value;
         }
 
         public string GenerateToken(User user)
         {
-     
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = GenerateClaims(user),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddDays(_jwtOptions.Expires),
                 SigningCredentials = credentials,
-                Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"]
+                Issuer = _jwtOptions.Issuer,
+                Audience = _jwtOptions.Audience,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
