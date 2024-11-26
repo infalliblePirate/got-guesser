@@ -66,7 +66,12 @@ namespace GotExplorer.API
             var corsSettings = builder.Configuration.GetSection("Cors").Get<CorsSettings>();
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(corsSettings.GetPolicy());
+                options.AddDefaultPolicy(options =>
+                {
+                    options.WithOrigins(corsSettings.Origins);
+                    options.WithMethods(corsSettings.Methods);
+                    options.WithHeaders(corsSettings.Headers);
+                });
             });
 
             // Add services to the container.

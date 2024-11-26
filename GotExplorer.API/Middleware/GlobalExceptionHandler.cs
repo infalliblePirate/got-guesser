@@ -22,7 +22,8 @@ namespace GotExplorer.API.Middleware
         {
             int status = exception switch
             {
-                HttpException ex => ex.StatusCode,
+                BadRequestException => StatusCodes.Status400BadRequest,
+                UnauthorizedException => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError,
             };
             var reasonPhrase = ReasonPhrases.GetReasonPhrase(status);

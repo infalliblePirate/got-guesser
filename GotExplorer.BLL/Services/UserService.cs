@@ -30,12 +30,12 @@ namespace GotExplorer.BLL.Services
             var user = await _userManager.FindByNameAsync(loginDTO.Username) ?? await _userManager.FindByEmailAsync(loginDTO.Username);
             
             if (user == null)
-                throw new HttpException(StatusCodes.Status401Unauthorized,"Username not found and/or password incorrect");
+                throw new UnauthorizedException("Username not found and/or password incorrect");
            
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
             if (!result.Succeeded)
-                throw new HttpException(StatusCodes.Status401Unauthorized, "Username not found and/or password incorrect");
+                throw new UnauthorizedException("Username not found and/or password incorrect");
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
@@ -50,7 +50,7 @@ namespace GotExplorer.BLL.Services
             
             if (!createdUser.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "User creation failed");
+                var ex = new BadRequestException("User creation failed");
                 ex.Data["errors"] = createdUser.Errors;
                 throw ex;
             }
@@ -59,11 +59,10 @@ namespace GotExplorer.BLL.Services
 
             if (!roleResult.Succeeded)
             {
-                var ex = new HttpException(StatusCodes.Status400BadRequest, "Adding user role failed");
+                var ex = new BadRequestException("Adding user role failed");
                 ex.Data["errors"] = roleResult.Errors;
                 throw ex;
             }
-
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
