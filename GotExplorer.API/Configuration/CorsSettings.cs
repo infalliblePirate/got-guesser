@@ -26,7 +26,7 @@ namespace GotExplorer.API.Configuration
             if (Origins == null || Origins.Length == 0)
                 builder.AllowAnyOrigin();
             else
-                builder.WithHeaders(Origins);
+                builder.WithOrigins(Origins);
             
             return builder.Build();
         }

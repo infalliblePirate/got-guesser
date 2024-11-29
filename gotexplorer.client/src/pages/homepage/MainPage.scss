@@ -117,21 +117,10 @@
     }
 }
 
-ul {
-    font-family: "Roboto", sans-serif;
-
-    li {
-        list-style: none;
-        display: inline;
-        margin-left: 30px;
-    }
-}
-
 nav {
     margin: 20px;
     display: grid;
     grid-template-columns: 1fr 4fr auto;
-    grid-row: 0.5;
     grid-column: 1 / 4;
     align-items: center;
     color: white;
@@ -140,6 +129,22 @@ nav {
     .menu-info {
         grid-column: 3;
         padding: 5px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+
+        ul {
+            font-family: "Roboto", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            li {
+                list-style: none;
+                display: inline;
+                margin-left: 30px;
+            }
+        }
     }
 }
 
