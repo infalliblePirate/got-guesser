@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using FluentValidation;
+using FluentValidation.Results;
 using GotExplorer.BLL.DTOs;
-using GotExplorer.BLL.Exceptions;
+using GotExplorer.BLL.Extensions;
 using GotExplorer.BLL.Services.Interfaces;
+using GotExplorer.BLL.Services.Results;
 using GotExplorer.DAL.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 
 namespace GotExplorer.BLL.Services
 {
@@ -16,57 +16,99 @@ namespace GotExplorer.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
-
-        public UserService(IJwtService jwtService, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper)
+        private readonly IValidator<RegisterDTO> _registerDtoValidator;
+        private readonly IValidator<LoginDTO> _loginDtoValidator;
+        public UserService(
+            IJwtService jwtService, 
+            UserManager<User> userManager, 
+            SignInManager<User> signInManager, 
+            IMapper mapper, 
+            IValidator<LoginDTO> loginDtoValidator, 
+            IValidator<RegisterDTO> registerDtoValidator)
         {
             _jwtService = jwtService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _loginDtoValidator = loginDtoValidator;
+            _registerDtoValidator = registerDtoValidator;
         }
 
-        public async Task<UserDTO> Login(LoginDTO loginDTO)
+        public async Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO)
         {
+            var serviceResult = new ServiceResult<UserDTO>();
+            var validationResult = await _loginDtoValidator.ValidateAsync(loginDTO);
+
+            if (!validationResult.IsValid)
+            {
+                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
+                return serviceResult;
+            }
+
             var user = await _userManager.FindByNameAsync(loginDTO.Username) ?? await _userManager.FindByEmailAsync(loginDTO.Username);
             
             if (user == null)
-                throw new UnauthorizedException("Username not found and/or password incorrect");
+            {
+                serviceResult.Error = new Error(ErrorCodes.Unauthorized, new ValidationResult() { 
+                    Errors = new() { 
+                        new ValidationFailure(nameof(loginDTO.Username), "Username not found and/or password incorrect"),
+                        new ValidationFailure(nameof(loginDTO.Password), "Username not found and/or password incorrect"),
+                    }
+                });
+                return serviceResult;
+            }
            
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
             if (!result.Succeeded)
-                throw new UnauthorizedException("Username not found and/or password incorrect");
+            {
+                serviceResult.Error = new Error(ErrorCodes.Unauthorized, new ValidationResult()
+                {
+                    Errors = new() {
+                        new ValidationFailure(nameof(loginDTO.Username), "Username not found and/or password incorrect"),
+                        new ValidationFailure(nameof(loginDTO.Password), "Username not found and/or password incorrect"),
+                    }
+                });
+                return serviceResult;
+            }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            return userDto;
+            serviceResult.ResultObject = userDto;
+            return serviceResult;
         }
 
-        public async Task<UserDTO> Register(RegisterDTO registerDTO)
-        {         
+        public async Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO)
+        {
+            var serviceResult = new ServiceResult<UserDTO>();
+            var validationResult = await _registerDtoValidator.ValidateAsync(registerDTO);
+
+            if (!validationResult.IsValid)
+            {
+                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult); 
+                return serviceResult;
+            }
+
             var user = _mapper.Map<User>(registerDTO);
 
             var createdUser = await _userManager.CreateAsync(user, registerDTO.Password);
             
             if (!createdUser.Succeeded)
             {
-                var ex = new BadRequestException("User creation failed");
-                ex.Data["errors"] = createdUser.Errors;
-                throw ex;
+                serviceResult.Error = new Error(ErrorCodes.UserCreationFailed, createdUser.ToValidationResult());
             }
 
             var roleResult = await _userManager.AddToRoleAsync(user, "User");
 
             if (!roleResult.Succeeded)
             {
-                var ex = new BadRequestException("Adding user role failed");
-                ex.Data["errors"] = roleResult.Errors;
-                throw ex;
+                serviceResult.Error = new Error(ErrorCodes.RoleAssignmentFailed, roleResult.ToValidationResult());
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            return userDto;
+            serviceResult.ResultObject = userDto;   
+            return serviceResult;
         }
     }
 }

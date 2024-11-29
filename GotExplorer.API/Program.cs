@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using System.Text.Json;
 using GotExplorer.API.Configuration;
 using GotExplorer.BLL.Options;
+using FluentValidation;
+using GotExplorer.BLL.DTOs;
+using GotExplorer.BLL.Validators;
 namespace GotExplorer.API
 {
     public class Program
@@ -84,6 +87,10 @@ namespace GotExplorer.API
             builder.Services.AddProblemDetails();
 
             builder.Services.AddControllers();
+
+            // Add Validators
+            builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDtoValidator>();
+            builder.Services.AddScoped<IValidator<LoginDTO>, LoginDtoValidator>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 

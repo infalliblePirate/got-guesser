@@ -1,10 +1,12 @@
 ﻿using GotExplorer.BLL.DTOs;
+using GotExplorer.BLL.Services.Results;
+using System.ComponentModel.DataAnnotations;
 
 namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<UserDTO> Register(RegisterDTO registerDTO);
-        Task<UserDTO> Login(LoginDTO loginDTO);
+        Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO);
+        Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO);
     }
 }

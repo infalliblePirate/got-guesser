@@ -1,5 +1,5 @@
-﻿using GotExplorer.BLL.DTOs;
-using GotExplorer.BLL.Exceptions;
+﻿using GotExplorer.API.Extensions;
+using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services;
 using GotExplorer.BLL.Services.Interfaces;
 using GotExplorer.DAL.Entities;
@@ -39,7 +39,7 @@ namespace GotExplorer.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _userService.Register(registerDTO);
-            return Ok(result);
+            return result.ToActionResult<UserDTO>();
         }
 
         /// <summary>
@@ -58,7 +58,8 @@ namespace GotExplorer.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var result = await _userService.Login(loginDTO);
-            return Ok(result);
+           
+            return result.ToActionResult<UserDTO>();
         }
 
         // TODO: Delete endpoint.
