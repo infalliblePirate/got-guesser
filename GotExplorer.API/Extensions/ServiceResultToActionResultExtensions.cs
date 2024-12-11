@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections;
 using System;
+using FluentValidation.Results;
 
 namespace GotExplorer.API.Extensions
 {
@@ -14,11 +15,23 @@ namespace GotExplorer.API.Extensions
             {
                 return new OkObjectResult(serviceResult.ResultObject);
             }
-            return new ObjectResult(GetProblemDetails(serviceResult.Error));
+            return GetActionResult(serviceResult.ValidationResult);
         }
-        private static ProblemDetails GetProblemDetails(Error error)
+        private static IActionResult GetActionResult(ValidationResult? validationResult)
         {
-            int code = error.Code switch
+            var result = new ObjectResult(validationResult);
+
+            var countUniqueErrors = validationResult.Errors
+                .Select(e => e.ErrorCode)
+                .Distinct().Count();
+
+            if (countUniqueErrors > 1)
+            {
+                result.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                return result;
+            }
+
+            result.StatusCode = validationResult.Errors[0].ErrorCode switch
             {
                 ErrorCodes.NotFound => StatusCodes.Status404NotFound,
                 ErrorCodes.Unauthorized => StatusCodes.Status401Unauthorized,
@@ -27,15 +40,7 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.UserCreationFailed => StatusCodes.Status400BadRequest,
                 ErrorCodes.RoleAssignmentFailed => StatusCodes.Status500InternalServerError,
             };
-
-            var problemDetails = new ProblemDetails
-            {
-                Status = code,
-                Title = ReasonPhrases.GetReasonPhrase(code),
-            };
-            problemDetails.Extensions["errors"] = error.ValidationResult.Errors;
-
-            return problemDetails;
+            return result;
         }
     }
 }

@@ -36,46 +36,40 @@ namespace GotExplorer.BLL.Services
 
         public async Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var serviceResult = new ServiceResult<UserDTO>();
             var validationResult = await _loginDtoValidator.ValidateAsync(loginDTO);
 
             if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
-                return serviceResult;
+                return ServiceResult<UserDTO>.Failure(validationResult);
             }
 
             var user = await _userManager.FindByNameAsync(loginDTO.Username) ?? await _userManager.FindByEmailAsync(loginDTO.Username);
             
             if (user == null)
             {
-                serviceResult.Error = new Error(ErrorCodes.Unauthorized, new ValidationResult() { 
-                    Errors = new() { 
-                        new ValidationFailure(nameof(loginDTO.Username), "Username not found and/or password incorrect"),
-                        new ValidationFailure(nameof(loginDTO.Password), "Username not found and/or password incorrect"),
+                return ServiceResult<UserDTO>.Failure(new ValidationResult()
+                {
+                    Errors = new() {
+                        new ValidationFailure(nameof(loginDTO.Username), "Username is incorrect",loginDTO.Username) { ErrorCode = ErrorCodes.Unauthorized },
                     }
                 });
-                return serviceResult;
             }
            
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
             if (!result.Succeeded)
             {
-                serviceResult.Error = new Error(ErrorCodes.Unauthorized, new ValidationResult()
+                return ServiceResult<UserDTO>.Failure(new ValidationResult()
                 {
                     Errors = new() {
-                        new ValidationFailure(nameof(loginDTO.Username), "Username not found and/or password incorrect"),
-                        new ValidationFailure(nameof(loginDTO.Password), "Username not found and/or password incorrect"),
+                        new ValidationFailure(nameof(loginDTO.Password), "Password is incorrect",loginDTO.Password) { ErrorCode = ErrorCodes.Unauthorized },
                     }
                 });
-                return serviceResult;
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            serviceResult.ResultObject = userDto;
-            return serviceResult;
+            return ServiceResult<UserDTO>.Success(userDto);
         }
 
         public async Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO)
@@ -85,8 +79,7 @@ namespace GotExplorer.BLL.Services
 
             if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult); 
-                return serviceResult;
+                return ServiceResult<UserDTO>.Failure(validationResult);
             }
 
             var user = _mapper.Map<User>(registerDTO);
@@ -95,20 +88,19 @@ namespace GotExplorer.BLL.Services
             
             if (!createdUser.Succeeded)
             {
-                serviceResult.Error = new Error(ErrorCodes.UserCreationFailed, createdUser.ToValidationResult());
+                return ServiceResult<UserDTO>.Failure(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
             }
 
             var roleResult = await _userManager.AddToRoleAsync(user, "User");
 
             if (!roleResult.Succeeded)
             {
-                serviceResult.Error = new Error(ErrorCodes.RoleAssignmentFailed, roleResult.ToValidationResult());
+                return ServiceResult<UserDTO>.Failure(roleResult.ToValidationResult(ErrorCodes.RoleAssignmentFailed));
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            serviceResult.ResultObject = userDto;   
-            return serviceResult;
+            return ServiceResult<UserDTO>.Success(userDto);
         }
     }
 }

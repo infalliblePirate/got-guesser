@@ -1,4 +1,5 @@
-﻿using GotExplorer.API.Extensions;
+﻿using FluentValidation.Results;
+using GotExplorer.API.Extensions;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services;
 using GotExplorer.BLL.Services.Interfaces;
@@ -34,8 +35,8 @@ namespace GotExplorer.API.Controllers
         /// <response code="500">An unexpected error occurred on the server</response>
         [HttpPost("register")]
         [ProducesResponseType(typeof(UserDTO), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _userService.Register(registerDTO);
@@ -52,9 +53,9 @@ namespace GotExplorer.API.Controllers
         /// <response code="500">An unexpected error occurred on the server</response>        
         [HttpPost("login")]
         [ProducesResponseType(typeof(UserDTO), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 401)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var result = await _userService.Login(loginDTO);
