@@ -17,6 +17,14 @@ namespace GotExplorer.API.Extensions
             }
             return GetActionResult(serviceResult.ValidationResult);
         }
+        public static IActionResult ToActionResult(this ServiceResult serviceResult)
+        {
+            if (serviceResult.IsSuccess)
+            {
+                return new OkResult();
+            }
+            return GetActionResult(serviceResult.ValidationResult);
+        }
         private static IActionResult GetActionResult(ValidationResult? validationResult)
         {
             var result = new ObjectResult(validationResult);

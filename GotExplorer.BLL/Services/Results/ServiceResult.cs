@@ -2,17 +2,9 @@
 
 namespace GotExplorer.BLL.Services.Results
 {
-    public class ServiceResult<T>
+    public class ServiceResult<T> : ServiceResult
     {
         public T? ResultObject { get; set; }
-        public ValidationResult? ValidationResult { get; set; } = null;
-        public bool IsSuccess
-        {
-            get
-            {
-                return (ValidationResult == null) || (ValidationResult != null && ValidationResult.IsValid);
-            }
-        }
 
         public static ServiceResult<T> Success(T? obj) 
         {
@@ -26,13 +18,22 @@ namespace GotExplorer.BLL.Services.Results
 
     public class ServiceResult
     {
-        public Error Error { get; set; } = Error.None;
+        public ValidationResult? ValidationResult { get; set; } = null;
         public bool IsSuccess
         {
             get
             {
-                return (Error.ValidationResult == null) || (Error.ValidationResult != null && Error.ValidationResult.IsValid);
+                return (ValidationResult == null) || (ValidationResult != null && ValidationResult.IsValid);
             }
+        }
+
+        public static ServiceResult Success()
+        {
+            return new ServiceResult();
+        }
+        public static ServiceResult Failure(ValidationResult? result)
+        {
+            return new ServiceResult { ValidationResult = result };
         }
     }
 }

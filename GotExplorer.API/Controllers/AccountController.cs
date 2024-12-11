@@ -3,6 +3,7 @@ using GotExplorer.API.Extensions;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services;
 using GotExplorer.BLL.Services.Interfaces;
+using GotExplorer.BLL.Services.Results;
 using GotExplorer.DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -75,14 +76,14 @@ namespace GotExplorer.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("update")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 401)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> UpdateUserById([FromBody] UpdateUserDTO updateUserDTO)
         {
             updateUserDTO.Id = User.GetClaimValue("Id");
-            var result = await _userService.UpdateUserByIdAsync(updateUserDTO);
+            ServiceResult result = await _userService.UpdateUserByIdAsync(updateUserDTO);
             return result.ToActionResult();
         }
 
@@ -98,10 +99,10 @@ namespace GotExplorer.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("update-password")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 401)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> UpdateUserPassword([FromBody] UpdateUserPasswordDTO updateUserPasswordDTO)
         {
             updateUserPasswordDTO.Id = User.GetClaimValue("Id");
@@ -119,9 +120,9 @@ namespace GotExplorer.API.Controllers
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [HttpPut("password-reset-link")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> GeneratePasswordResetLink([FromBody] GeneratePasswordResetLinkDTO generatePasswordResetLinkDTO)
         {
             var result = await _userService.GeneratePasswordResetLinkAsync(generatePasswordResetLinkDTO.Email, $"{Request.Scheme}://{Request.Host}{Url.Content("~/")}");
@@ -142,9 +143,9 @@ namespace GotExplorer.API.Controllers
         /// <response code="500">An unexpected error occurred on the server.</response>        
         [HttpPut("password-reset")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
             var result = await _userService.ResetPasswordAsync(resetPasswordDTO);
@@ -162,10 +163,10 @@ namespace GotExplorer.API.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpDelete("delete")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 401)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 500)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 401)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> DeleteUser()
         {
             var userId = User.GetClaimValue("Id");
