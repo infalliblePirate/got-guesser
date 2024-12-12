@@ -30,22 +30,19 @@ namespace GotExplorer.BLL.Services
             
         public async Task<ServiceResult<ImageDTO>> GetImageAsync(Guid id)
         {
-            var serviceResult = new ServiceResult<ImageDTO>();
             var result = await _appDbContext.Images.FindAsync(id);
 
             if (result == null || !File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, result.Path)))
             {
-                serviceResult.Error = new Error(ErrorCodes.NotFound, new ValidationResult
+                return ServiceResult<ImageDTO>.Failure(new ValidationResult
                 {
                     Errors = new() {
-                        new ValidationFailure(nameof(id), "Image not found", id),
+                        new ValidationFailure(nameof(id), "Image not found", id) { ErrorCode = ErrorCodes.NotFound },
                     }
                 });
-                return serviceResult;
             }
             var image = _mapper.Map<ImageDTO>(result);
-            serviceResult.ResultObject = image;
-            return serviceResult;
+            return ServiceResult<ImageDTO>.Success(image);
         }
 
         public async Task<ServiceResult<IEnumerable<ImageDTO>>> GetAllImagesAsync()
@@ -57,12 +54,10 @@ namespace GotExplorer.BLL.Services
 
         public async Task<ServiceResult> UploadImageAsync(UploadImageDTO uploadImageDTO)
         {
-            var serviceResult = new ServiceResult();
             var validationResult = await _imageValidator.ValidateAsync(uploadImageDTO);
             if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
-                return serviceResult;
+                return ServiceResult.Failure(validationResult);
             }
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadImageDTO.Image.FileName)}";
             var filePath = Path.Combine(_imagePath,fileName);
@@ -93,39 +88,34 @@ namespace GotExplorer.BLL.Services
                 if (File.Exists(fileAbsolutePath)) { 
                     File.Delete(fileAbsolutePath);
                 }
-
-                serviceResult.Error = new Error(ErrorCodes.ImageUploadFailed, new ValidationResult
+                return ServiceResult.Failure(new ValidationResult
                 {
                     Errors = new() {
-                        new ValidationFailure(nameof(uploadImageDTO.Image), "Failed to upload the image"),
+                        new ValidationFailure(nameof(uploadImageDTO.Image), "Failed to upload the image") { ErrorCode = ErrorCodes.ImageUploadFailed },
                     }
                 });
             }
-            return serviceResult;
+            return ServiceResult.Success();
         }
 
         public async Task<ServiceResult> UpdateImageAsync(Guid id, UploadImageDTO uploadImageDTO)
         {
-            var serviceResult = new ServiceResult();
-
             var validationResult = await _imageValidator.ValidateAsync(uploadImageDTO);
             if (!validationResult.IsValid)
             {
-                serviceResult.Error = new Error(ErrorCodes.Invalid, validationResult);
-                return serviceResult;
+                return ServiceResult.Failure(validationResult);
             }
 
             var image = await _appDbContext.Images.FindAsync(id);
 
             if (image == null)
             {
-                serviceResult.Error = new Error(ErrorCodes.NotFound, new ValidationResult
+                return ServiceResult.Failure(new ValidationResult
                 {
                     Errors = new() {
-                        new ValidationFailure(nameof(id), "Image not found", id)
+                        new ValidationFailure(nameof(id), "Image not found", id) { ErrorCode = ErrorCodes.NotFound}
                     }
                 });
-                return serviceResult;
             }
 
             var newFileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadImageDTO.Image.FileName)}";
@@ -164,33 +154,29 @@ namespace GotExplorer.BLL.Services
                     File.Delete(newFileAbsolutePath);
                 }
 
-                serviceResult.Error = new Error(ErrorCodes.ImageUpdateFailed, new ValidationResult
+                return ServiceResult.Failure(new ValidationResult
                 {
                     Errors = new()
                     {
-                        new ValidationFailure(nameof(uploadImageDTO.Image), "Failed to update the image"),
+                        new ValidationFailure(nameof(uploadImageDTO.Image), "Failed to update the image") { ErrorCode = ErrorCodes.ImageUpdateFailed },
                     }
                 });
             }
 
-            return serviceResult;
+            return ServiceResult.Success();
         }
 
         public async Task<ServiceResult> DeleteImageAsync(Guid id)
         {
-            var serviceResult = new ServiceResult();
-
             var image = await _appDbContext.Images.FindAsync(id);
             if (image == null)
             {
-                serviceResult.Error = new Error(ErrorCodes.NotFound, new ValidationResult
+                return ServiceResult.Failure(new ValidationResult
                 {
-                    Errors = new()
-                    {
-                        new ValidationFailure(nameof(id), "Image not found", id)
+                    Errors = new() {
+                        new ValidationFailure(nameof(id), "Image not found", id) { ErrorCode = ErrorCodes.NotFound}
                     }
                 });
-                return serviceResult;
             }
 
             var fileAbsolutePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Path);
@@ -211,7 +197,7 @@ namespace GotExplorer.BLL.Services
             {
                 await transaction.RollbackAsync();
 
-                serviceResult.Error = new Error(ErrorCodes.ImageDeletionFailed, new ValidationResult
+                return ServiceResult.Failure(new ValidationResult
                 {
                     Errors = new()
                     {
@@ -220,7 +206,7 @@ namespace GotExplorer.BLL.Services
                 });
             }
 
-            return serviceResult;
+            return ServiceResult.Success();
         }
 
     }
