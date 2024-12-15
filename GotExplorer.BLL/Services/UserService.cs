@@ -24,11 +24,11 @@ namespace GotExplorer.BLL.Services
         private readonly IValidator<UpdateUserPasswordDTO> _updateUserPasswordDtoValidator;
         private readonly IValidator<ResetPasswordDTO> _resetPasswordDtoValidator;
         public UserService(
-            IJwtService jwtService, 
-            UserManager<User> userManager, 
-            SignInManager<User> signInManager, 
-            IMapper mapper, 
-            IValidator<LoginDTO> loginDtoValidator, 
+            IJwtService jwtService,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IMapper mapper,
+            IValidator<LoginDTO> loginDtoValidator,
             IValidator<RegisterDTO> registerDtoValidator,
             IValidator<UpdateUserDTO> updateUserDtoValidator,
             IValidator<UpdateUserPasswordDTO> updateUserPasswordDtoValidator,
@@ -98,7 +98,7 @@ namespace GotExplorer.BLL.Services
             var user = _mapper.Map<User>(registerDTO);
 
             var createdUser = await _userManager.CreateAsync(user, registerDTO.Password);
-            
+
             if (!createdUser.Succeeded)
             {
                 return ServiceResult<UserDTO>.Failure(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
@@ -115,7 +115,7 @@ namespace GotExplorer.BLL.Services
             userDto.Token = _jwtService.GenerateToken(user);
             return ServiceResult<UserDTO>.Success(userDto);
         }
-             
+
         public async Task<ServiceResult> UpdateUserByIdAsync(UpdateUserDTO updateUserDTO)
         {
             var validationResult = await _updateUserDtoValidator.ValidateAsync(updateUserDTO);
@@ -136,8 +136,8 @@ namespace GotExplorer.BLL.Services
                 });
 
             }
-               
-            _mapper.Map(updateUserDTO,user);
+
+            _mapper.Map(updateUserDTO, user);
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -170,8 +170,8 @@ namespace GotExplorer.BLL.Services
                     }
                 });
             }
-                
-            var result = await _userManager.ChangePasswordAsync(user,updateUserPasswordDTO.CurrentPassword,updateUserPasswordDTO.NewPassword);
+
+            var result = await _userManager.ChangePasswordAsync(user, updateUserPasswordDTO.CurrentPassword, updateUserPasswordDTO.NewPassword);
 
             if (!result.Succeeded)
             {
