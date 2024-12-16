@@ -31,8 +31,8 @@ namespace GotExplorer.API.Middleware
 
             var problemDetails = new ProblemDetails
             {
-                Status = status,
-                Title = reasonPhrase,
+                Status = StatusCodes.Status500InternalServerError,
+                Title = ReasonPhrases.GetReasonPhrase(StatusCodes.Status500InternalServerError),
                 Detail = exception.Message,
             };
 

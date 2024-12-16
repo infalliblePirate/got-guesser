@@ -48,6 +48,10 @@ namespace GotExplorer.DAL
 
             builder.HasPostgresEnum<GameType>();
 
+            builder.Entity<User>()
+                .Property(e => e.ImageId)
+                .HasDefaultValue(1);
+
             builder.Entity<Image>().HasData(
                 new Image { Id = 1, Name = "", Path = "" }
             );
