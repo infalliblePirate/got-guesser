@@ -12,6 +12,19 @@ body {
     height: 100vh;
     align-items: center;
 
+    .warning-alert{
+        border: 3px;
+        border-radius:10px;
+        background-color:midnightblue;
+        color:white;
+        padding:10px;
+        margin-bottom:10px;
+
+        p{
+            margin-top:10px;
+        }
+    }
+
     .photo-bg {
         grid-column: 1;
         content: url(../../assets/images/dragon-eye.png);
