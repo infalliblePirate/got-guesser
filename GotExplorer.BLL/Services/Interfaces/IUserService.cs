@@ -6,7 +6,7 @@ namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO);
-        Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO);
+        Task<ValidationWithEntityModel<UserDTO>> Register(RegisterDTO registerDTO);
+        Task<ValidationWithEntityModel<UserDTO>> Login(LoginDTO loginDTO);
     }
 }

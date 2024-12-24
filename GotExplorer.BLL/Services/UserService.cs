@@ -34,52 +34,51 @@ namespace GotExplorer.BLL.Services
             _registerDtoValidator = registerDtoValidator;
         }
 
-        public async Task<ServiceResult<UserDTO>> Login(LoginDTO loginDTO)
+        public async Task<ValidationWithEntityModel<UserDTO>> Login(LoginDTO loginDTO)
         {
             var validationResult = await _loginDtoValidator.ValidateAsync(loginDTO);
 
             if (!validationResult.IsValid)
             {
-                return ServiceResult<UserDTO>.Failure(validationResult);
+                return new ValidationWithEntityModel<UserDTO>(validationResult);
             }
 
             var user = await _userManager.FindByNameAsync(loginDTO.Username) ?? await _userManager.FindByEmailAsync(loginDTO.Username);
             
             if (user == null)
             {
-                return ServiceResult<UserDTO>.Failure(new ValidationResult()
+                return new ValidationWithEntityModel<UserDTO>()
                 {
                     Errors = new() {
                         new ValidationFailure(nameof(loginDTO.Username), "Username is incorrect",loginDTO.Username) { ErrorCode = ErrorCodes.Unauthorized },
                     }
-                });
+                };
             }
            
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
             if (!result.Succeeded)
             {
-                return ServiceResult<UserDTO>.Failure(new ValidationResult()
+                return new ValidationWithEntityModel<UserDTO>()
                 {
                     Errors = new() {
                         new ValidationFailure(nameof(loginDTO.Password), "Password is incorrect",loginDTO.Password) { ErrorCode = ErrorCodes.Unauthorized },
                     }
-                });
+                };
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            return ServiceResult<UserDTO>.Success(userDto);
+            return new ValidationWithEntityModel<UserDTO>(userDto);
         }
 
-        public async Task<ServiceResult<UserDTO>> Register(RegisterDTO registerDTO)
+        public async Task<ValidationWithEntityModel<UserDTO>> Register(RegisterDTO registerDTO)
         {
-            var serviceResult = new ServiceResult<UserDTO>();
             var validationResult = await _registerDtoValidator.ValidateAsync(registerDTO);
 
             if (!validationResult.IsValid)
             {
-                return ServiceResult<UserDTO>.Failure(validationResult);
+                return new ValidationWithEntityModel<UserDTO>(validationResult);
             }
 
             var user = _mapper.Map<User>(registerDTO);
@@ -88,19 +87,19 @@ namespace GotExplorer.BLL.Services
             
             if (!createdUser.Succeeded)
             {
-                return ServiceResult<UserDTO>.Failure(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
+                return new ValidationWithEntityModel<UserDTO>(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
             }
 
             var roleResult = await _userManager.AddToRoleAsync(user, "User");
 
             if (!roleResult.Succeeded)
             {
-                return ServiceResult<UserDTO>.Failure(roleResult.ToValidationResult(ErrorCodes.RoleAssignmentFailed));
+                return new ValidationWithEntityModel<UserDTO>(roleResult.ToValidationResult(ErrorCodes.RoleAssignmentFailed));
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
             userDto.Token = _jwtService.GenerateToken(user);
-            return ServiceResult<UserDTO>.Success(userDto);
+            return new ValidationWithEntityModel<UserDTO>(userDto);
         }
     }
 }

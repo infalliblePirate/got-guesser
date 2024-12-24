@@ -7,15 +7,15 @@ using FluentValidation.Results;
 
 namespace GotExplorer.API.Extensions
 {
-    public static class ServiceResultToActionResultExtensions
+    public static class ActionResultExtensions
     {
-        public static IActionResult ToActionResult<T>(this ServiceResult<T> serviceResult)
+        public static IActionResult ToActionResult<TData>(this ValidationWithEntityModel<TData> validationResult)
         {
-            if (serviceResult.IsSuccess)
+            if (validationResult.IsValid)
             {
-                return new OkObjectResult(serviceResult.ResultObject);
+                return new OkObjectResult(validationResult.Entity);
             }
-            return GetActionResult(serviceResult.ValidationResult);
+            return GetActionResult(validationResult);
         }
         private static IActionResult GetActionResult(ValidationResult? validationResult)
         {
