@@ -8,33 +8,33 @@ namespace GotExplorer.BLL.Validators
     {
         public UpdateUserPasswordDtoValidator() 
         {
-            RuleFor(x => x.Id)         
+            RuleFor(x => x.Id)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Id is required");
+                .WithMessage(ErrorMessages.IdRequired);
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password is required.")
+                .WithMessage(ErrorMessages.PasswordRequired)
                 .MinimumLength(8)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must be at least 8 characters long.")
+                .WithMessage(ErrorMessages.PasswordMinLength)
                 .Matches(@"[0-9]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one digit.")
+                .WithMessage(ErrorMessages.PasswordMustContainDigit)
                 .Matches(@"[a-z]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one lowercase letter.")
+                .WithMessage(ErrorMessages.PasswordMustContainLowercase)
                 .Matches(@"[A-Z]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one uppercase letter.")
+                .WithMessage(ErrorMessages.PasswordMustContainUppercase)
                 .Matches(@"[^a-zA-Z0-9]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one special character.");
+                .WithMessage(ErrorMessages.PasswordMustContainSpecial);
             RuleFor(x => x.CurrentPassword)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password is required.");
+                .WithMessage(ErrorMessages.PasswordRequired);
         }
     }
 }

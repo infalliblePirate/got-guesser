@@ -24,11 +24,11 @@ namespace GotExplorer.BLL.Services
         private readonly IValidator<UpdateUserPasswordDTO> _updateUserPasswordDtoValidator;
         private readonly IValidator<ResetPasswordDTO> _resetPasswordDtoValidator;
         public UserService(
-            IJwtService jwtService, 
-            UserManager<User> userManager, 
-            SignInManager<User> signInManager, 
-            IMapper mapper, 
-            IValidator<LoginDTO> loginDtoValidator, 
+            IJwtService jwtService,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IMapper mapper,
+            IValidator<LoginDTO> loginDtoValidator,
             IValidator<RegisterDTO> registerDtoValidator,
             IValidator<UpdateUserDTO> updateUserDtoValidator,
             IValidator<UpdateUserPasswordDTO> updateUserPasswordDtoValidator,
@@ -71,7 +71,7 @@ namespace GotExplorer.BLL.Services
             {
                 return new ValidationWithEntityModel<UserDTO>(
                     new ValidationFailure(nameof(loginDTO.Password), ErrorMessages.UserServiceIncorrectPassword, loginDTO.Password) { ErrorCode = ErrorCodes.Unauthorized }
-                );    
+                );
             }
 
             var userDto = _mapper.Map<UserDTO>(user);
@@ -91,7 +91,7 @@ namespace GotExplorer.BLL.Services
             var user = _mapper.Map<User>(registerDTO);
 
             var createdUser = await _userManager.CreateAsync(user, registerDTO.Password);
-            
+
             if (!createdUser.Succeeded)
             {
                 return new ValidationWithEntityModel<UserDTO>(createdUser.ToValidationResult(ErrorCodes.UserCreationFailed));
@@ -108,7 +108,7 @@ namespace GotExplorer.BLL.Services
             userDto.Token = _jwtService.GenerateToken(user);
             return new ValidationWithEntityModel<UserDTO>(userDto);
         }
-             
+
         public async Task<ValidationResult> UpdateUserByIdAsync(UpdateUserDTO updateUserDTO)
         {
             var validationResult = await _updateUserDtoValidator.ValidateAsync(updateUserDTO);
@@ -121,16 +121,14 @@ namespace GotExplorer.BLL.Services
 
             if (user == null)
             {
-                return new ValidationResult()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(updateUserDTO.Id), "User not found", updateUserDTO.Id) { ErrorCode=ErrorCodes.NotFound },
-                    }
-                };
+                return new ValidationResult(
+                [
+                    new ValidationFailure(nameof(updateUserDTO.Id), ErrorMessages.UserServiceUserNotFound, updateUserDTO.Id) { ErrorCode=ErrorCodes.NotFound },
+                ]);
 
             }
-               
-            _mapper.Map(updateUserDTO,user);
+
+            _mapper.Map(updateUserDTO, user);
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -155,16 +153,13 @@ namespace GotExplorer.BLL.Services
 
             if (user == null)
             {
-                return new ValidationResult()
-                {
-                    Errors = new()
-                    {
-                        new ValidationFailure(nameof(updateUserPasswordDTO.Id), "User not found", updateUserPasswordDTO.Id) { ErrorCode = ErrorCodes.NotFound }
-                    }
-                };
+                return new ValidationResult(
+                    [
+                        new ValidationFailure(nameof(updateUserPasswordDTO.Id), ErrorMessages.UserServiceUserNotFound, updateUserPasswordDTO.Id) { ErrorCode = ErrorCodes.NotFound }
+                    ]);
             }
-                
-            var result = await _userManager.ChangePasswordAsync(user,updateUserPasswordDTO.CurrentPassword,updateUserPasswordDTO.NewPassword);
+
+            var result = await _userManager.ChangePasswordAsync(user, updateUserPasswordDTO.CurrentPassword, updateUserPasswordDTO.NewPassword);
 
             if (!result.Succeeded)
             {
@@ -179,12 +174,10 @@ namespace GotExplorer.BLL.Services
 
             if (user == null)
             {
-                return new ValidationResult()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(email), "User not found",email) { ErrorCode = ErrorCodes.NotFound },
-                    }
-                };
+                return new ValidationResult(
+                    [
+                        new ValidationFailure(nameof(email), ErrorMessages.UserServiceUserNotFound, email) { ErrorCode = ErrorCodes.NotFound },
+                    ]);
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -205,12 +198,11 @@ namespace GotExplorer.BLL.Services
             var user = await _userManager.FindByIdAsync(resetPasswordDTO.Id.ToString());
             if (user == null)
             {
-                return new ValidationResult()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(resetPasswordDTO.Id), "User not found",resetPasswordDTO.Id) { ErrorCode = ErrorCodes.NotFound },
-                    }
-                };
+                return new ValidationResult(
+                    [
+                        new ValidationFailure(nameof(resetPasswordDTO.Id), ErrorMessages.UserServiceUserNotFound,resetPasswordDTO.Id) { ErrorCode = ErrorCodes.NotFound },
+                    ]);
+
             }
 
             var result = await _userManager.ResetPasswordAsync(user, resetPasswordDTO.Token, resetPasswordDTO.Password);
@@ -229,12 +221,10 @@ namespace GotExplorer.BLL.Services
 
             if (user == null)
             {
-                return new ValidationResult()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(userId), "User not found", userId) { ErrorCode = ErrorCodes.NotFound},
-                    }
-                };
+                return new ValidationResult(
+                    [
+                        new ValidationFailure(nameof(userId), ErrorMessages.UserServiceUserNotFound, userId) { ErrorCode = ErrorCodes.NotFound},
+                    ]);
             }
 
             var result = await _userManager.DeleteAsync(user);
