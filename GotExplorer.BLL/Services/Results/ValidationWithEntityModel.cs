@@ -6,17 +6,25 @@ namespace GotExplorer.BLL.Services.Results
     {
         public TData? Entity { get; set; }
         
-        public ValidationWithEntityModel() : base() { }
-
-        public ValidationWithEntityModel(TData? entity)
+        public ValidationWithEntityModel(TData entity) : base() 
         {
             Entity = entity;
         }
 
-        public ValidationWithEntityModel(ValidationResult validationResult)
+        public ValidationWithEntityModel(ValidationResult validationResult) : base()
         {
             Errors = validationResult.Errors;
             RuleSetsExecuted = validationResult.RuleSetsExecuted;
+        }
+
+        public ValidationWithEntityModel(List<ValidationFailure> errors) : base()
+        {
+            Errors = errors;
+        }
+
+        public ValidationWithEntityModel(ValidationFailure error) : base()
+        {
+            Errors.Add(error);
         }
     }
 }

@@ -11,12 +11,11 @@ namespace GotExplorer.BLL.Validators
             RuleFor(x => x.Username)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Username is required.");
-           
+                .WithMessage(ErrorMessages.UsernameRequired);
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password is required.");
+                .WithMessage(ErrorMessages.PasswordRequired);
         }
     }
 }

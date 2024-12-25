@@ -47,24 +47,18 @@ namespace GotExplorer.BLL.Services
             
             if (user == null)
             {
-                return new ValidationWithEntityModel<UserDTO>()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(loginDTO.Username), "Username is incorrect",loginDTO.Username) { ErrorCode = ErrorCodes.Unauthorized },
-                    }
-                };
+                return new ValidationWithEntityModel<UserDTO>(
+                    new ValidationFailure(nameof(loginDTO.Username), ErrorMessages.UserServiceIncorrectUsername, loginDTO.Username) { ErrorCode = ErrorCodes.Unauthorized }
+                );
             }
            
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDTO.Password, false);
 
             if (!result.Succeeded)
             {
-                return new ValidationWithEntityModel<UserDTO>()
-                {
-                    Errors = new() {
-                        new ValidationFailure(nameof(loginDTO.Password), "Password is incorrect",loginDTO.Password) { ErrorCode = ErrorCodes.Unauthorized },
-                    }
-                };
+                return new ValidationWithEntityModel<UserDTO>(
+                    new ValidationFailure(nameof(loginDTO.Password), ErrorMessages.UserServiceIncorrectPassword, loginDTO.Password) { ErrorCode = ErrorCodes.Unauthorized }
+                );    
             }
 
             var userDto = _mapper.Map<UserDTO>(user);

@@ -11,33 +11,33 @@ namespace GotExplorer.BLL.Validators
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Email is required.")
+                .WithMessage(ErrorMessages.EmailRequired)
                 .EmailAddress()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Email must be a valid email address.");
+                .WithMessage(ErrorMessages.InvalidEmail);
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password is required.")
+                .WithMessage(ErrorMessages.PasswordRequired)
                 .MinimumLength(8)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must be at least 8 characters long.")
+                .WithMessage(ErrorMessages.PasswordMinLength)
                 .Matches(@"[0-9]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one digit.")
+                .WithMessage(ErrorMessages.PasswordMustContainDigit)
                 .Matches(@"[a-z]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one lowercase letter.")
+                .WithMessage(ErrorMessages.PasswordMustContainLowercase)
                 .Matches(@"[A-Z]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one uppercase letter.")
+                .WithMessage(ErrorMessages.PasswordMustContainUppercase)
                 .Matches(@"[^a-zA-Z0-9]")
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Password must contain at least one special character.");
+                .WithMessage(ErrorMessages.PasswordMustContainSpecial);
             RuleFor(x => x.Username)
                 .NotEmpty()
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("Username is required.");
+                .WithMessage(ErrorMessages.UsernameRequired);
         }
     }
 }
