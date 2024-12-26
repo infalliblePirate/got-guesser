@@ -21,6 +21,9 @@
         public static readonly string LevelServiceFailedToUpdateLevel = "Failed to update the level";
         public static readonly string LevelServiceFailedToDeleteLevel = "Failed to delete the level";
 
+        public static readonly string GameServiceGameNotFound = "Game not found.";
+        public static readonly string GameServiceFailedToCompleteGame = "Failed to complete the game.";
+
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
         public static readonly string PasswordRequired = "Password is required.";
