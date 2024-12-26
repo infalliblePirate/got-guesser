@@ -8,9 +8,9 @@ namespace GotExplorer.DAL.Entities
     {
         public int Id { get; set; }
 
-        public int Score { get; set; }
+        public DateTime StartTime { get; set; }
 
-        public TimeSpan SpentTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         public int UserId { get; set; }
 
@@ -20,5 +20,7 @@ namespace GotExplorer.DAL.Entities
         public GameType GameType { get; set; }
 
         public List<Level> Levels { get; set; }
+
+        public bool IsFinished { get; set; }
     }
 }
