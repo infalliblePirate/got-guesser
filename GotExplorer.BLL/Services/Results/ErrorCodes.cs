@@ -30,5 +30,6 @@
 
         public const string GameNotFound = nameof(GameNotFound);
         public const string GameCompletionFailed = nameof(GameCompletionFailed);
+        public const string GameStartFailed = nameof(GameStartFailed);
     }
 }

@@ -60,6 +60,7 @@ namespace GotExplorer.API.Extensions
                 ErrorCodes.LevelCreationFailed => StatusCodes.Status400BadRequest,
                 ErrorCodes.LevelUpdateFailed => StatusCodes.Status500InternalServerError,
                 ErrorCodes.LevelDeletionFailed => StatusCodes.Status500InternalServerError,
+                ErrorCodes.GameStartFailed => StatusCodes.Status500InternalServerError,
                 _ => StatusCodes.Status500InternalServerError,
             };
             return result;

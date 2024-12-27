@@ -1,4 +1,3 @@
-using AutoMapper;
 using FluentValidation;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Services.Interfaces;
@@ -7,6 +6,9 @@ using GotExplorer.DAL;
 using GotExplorer.DAL.Entities;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using GotExplorer.BLL.Options;
+using Microsoft.Extensions.Options;
 
 namespace GotExplorer.BLL.Services
 {
@@ -14,11 +16,15 @@ namespace GotExplorer.BLL.Services
     {
         private readonly AppDbContext _appDbContext;
         private readonly IValidator<CompleteGameDTO> _completeGameValidator;
+        private readonly UserManager<User> _userManager;
+        private readonly GameOptions _gameOptions;
 
-        public GameService(AppDbContext appDbContext, IValidator<CompleteGameDTO> completeGameValidator)
+        public GameService(IOptions<GameOptions> gameOptions, AppDbContext appDbContext, UserManager<User> userManager, IValidator<CompleteGameDTO> completeGameValidator)
         {
+            _gameOptions = gameOptions.Value;
             _appDbContext = appDbContext;
             _completeGameValidator = completeGameValidator;
+            _userManager = userManager;
         }
 
         public async Task<ValidationResult> CompleteGameAsync(CompleteGameDTO completeGameDTO)
@@ -44,7 +50,7 @@ namespace GotExplorer.BLL.Services
                     ]);
             }
 
-            game.Score = game.Levels.Count * 10; // TODO: hardcoded
+            //game.Score = game.Levels.Count * 10; // TODO: hardcoded
 
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
             try
@@ -69,5 +75,55 @@ namespace GotExplorer.BLL.Services
             return new ValidationResult();
         }
 
+        public async Task<ValidationWithEntityModel<NewGameDTO>> StartGameAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return new ValidationWithEntityModel<NewGameDTO>(
+                    new ValidationFailure(nameof(userId), ErrorMessages.IncorrectUserId, userId) { ErrorCode = ErrorCodes.Unauthorized }
+                );
+            }
+
+            var levels = _appDbContext.Levels.OrderBy(r => Guid.NewGuid()).Take(_gameOptions.LevelsPerGame).ToList();
+
+            using var transaction = await _appDbContext.Database.BeginTransactionAsync();
+            var newGameDto = new NewGameDTO();
+            newGameDto.LevelIds = levels.Select(e => e.Id);
+
+            try
+            {
+                _appDbContext.Attach(user);
+                _appDbContext.AttachRange(levels);
+                var game = new Game()
+                {
+                    User = user,
+                    StartTime = DateTime.UtcNow,
+                    GameType = GameType.Standard,
+                    Levels = levels
+                };
+
+                await _appDbContext.Games.AddAsync(game);
+                await _appDbContext.SaveChangesAsync();
+                newGameDto.GameId = game.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+
+                return new ValidationWithEntityModel<NewGameDTO>(
+                    [
+                        new ValidationFailure()
+                        {
+                            ErrorMessage = ErrorMessages.FailedToStartTheGame,
+                            ErrorCode = ErrorCodes.GameStartFailed
+                        }
+                    ]);
+            }
+
+            return new ValidationWithEntityModel<NewGameDTO>(newGameDto);
+        }
     }
 }

@@ -43,5 +43,8 @@
         public const string FileSizeShouldBeLessThan = "File size should be less than {0} MB.";
         public const string InvalidImage = "Image is invalid.";
         public const string InvalidModel = "Model is invalid.";
+
+        public static readonly string FailedToStartTheGame = "Failed to start the game.";
+        public static readonly string IncorrectUserId = "User id is incorrect";
     }
 }

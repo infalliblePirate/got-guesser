@@ -37,9 +37,6 @@ namespace GotExplorer.DAL.Migrations
                     b.Property<int>("GameType")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsFinished")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -100,7 +97,7 @@ namespace GotExplorer.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"),
+                            Id = new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"),
                             Name = "",
                             Path = "",
                             Version = 0u
@@ -191,7 +188,7 @@ namespace GotExplorer.DAL.Migrations
                     b.Property<Guid>("ImageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValue(new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"));
+                        .HasDefaultValue(new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");

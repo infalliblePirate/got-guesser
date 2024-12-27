@@ -20,7 +20,5 @@ namespace GotExplorer.DAL.Entities
         public GameType GameType { get; set; }
 
         public List<Level> Levels { get; set; }
-
-        public bool IsFinished { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GotExplorer.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class addedsomegamefields : Migration
+    public partial class updatedgame : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,13 +33,6 @@ namespace GotExplorer.DAL.Migrations
                 type: "timestamp with time zone",
                 nullable: true);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsFinished",
-                table: "Games",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
-
             migrationBuilder.AddColumn<DateTime>(
                 name: "StartTime",
                 table: "Games",
@@ -52,7 +45,7 @@ namespace GotExplorer.DAL.Migrations
                 table: "AspNetUsers",
                 type: "uuid",
                 nullable: false,
-                defaultValue: new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"),
+                defaultValue: new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"),
                 oldClrType: typeof(Guid),
                 oldType: "uuid",
                 oldDefaultValue: new Guid("931e2a1d-7766-4f9f-9ced-f78b57a8faf4"));
@@ -85,7 +78,7 @@ namespace GotExplorer.DAL.Migrations
             migrationBuilder.InsertData(
                 table: "Images",
                 columns: new[] { "Id", "Name", "Path" },
-                values: new object[] { new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"), "", "" });
+                values: new object[] { new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"), "", "" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameLevels_LevelId",
@@ -102,14 +95,10 @@ namespace GotExplorer.DAL.Migrations
             migrationBuilder.DeleteData(
                 table: "Images",
                 keyColumn: "Id",
-                keyValue: new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"));
+                keyValue: new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"));
 
             migrationBuilder.DropColumn(
                 name: "EndTime",
-                table: "Games");
-
-            migrationBuilder.DropColumn(
-                name: "IsFinished",
                 table: "Games");
 
             migrationBuilder.DropColumn(
@@ -138,7 +127,7 @@ namespace GotExplorer.DAL.Migrations
                 defaultValue: new Guid("931e2a1d-7766-4f9f-9ced-f78b57a8faf4"),
                 oldClrType: typeof(Guid),
                 oldType: "uuid",
-                oldDefaultValue: new Guid("0e493e29-e823-4ecd-95b9-3e4ca702d5d1"));
+                oldDefaultValue: new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"));
 
             migrationBuilder.CreateTable(
                 name: "GameLevel",
