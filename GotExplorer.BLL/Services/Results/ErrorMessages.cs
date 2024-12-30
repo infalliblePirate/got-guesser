@@ -24,6 +24,9 @@
         public static readonly string GameServiceGameNotFound = "Game not found.";
         public static readonly string GameServiceFailedToCompleteGame = "Failed to complete the game.";
 
+        public static readonly string GameLevelServiceGameLevelNotFound = "Game does not have any levels associated with it.";
+        public static readonly string GameLevelServiceFailedToSaveScore = "Failed to save the score for the specified game level.";
+
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
         public static readonly string PasswordRequired = "Password is required.";
@@ -46,5 +49,6 @@
 
         public static readonly string FailedToStartTheGame = "Failed to start the game.";
         public static readonly string IncorrectUserId = "User id is incorrect";
+        public static readonly string IncorrectLevelId = "Level id is incorrect";
     }
 }

@@ -28,8 +28,9 @@
         public const string LevelUpdateFailed = nameof(LevelUpdateFailed);
         public const string LevelDeletionFailed = nameof(LevelDeletionFailed);
 
-        public const string GameNotFound = nameof(GameNotFound);
-        public const string GameCompletionFailed = nameof(GameCompletionFailed);
+        public const string GameLevelUpdateFailed = nameof(GameLevelUpdateFailed);
+
         public const string GameStartFailed = nameof(GameStartFailed);
+        public const string GameCompletionFailed = nameof(GameCompletionFailed);
     }
 }
