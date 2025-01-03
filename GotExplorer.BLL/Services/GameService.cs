@@ -45,7 +45,7 @@ namespace GotExplorer.BLL.Services
                     [
                         new ValidationFailure(nameof(completeGameDTO.GameId), "Game not found or already completed.")
                         {
-                            ErrorCode = ErrorCodes.GameNotFound
+                            ErrorCode = ErrorCodes.NotFound
                         }
                     ]);
             }

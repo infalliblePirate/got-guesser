@@ -2,16 +2,17 @@ using FluentValidation;
 using GotExplorer.BLL.DTOs;
 using GotExplorer.BLL.Options;
 using GotExplorer.BLL.Services.Results;
+using Microsoft.Extensions.Options;
 
 namespace GotExplorer.BLL.Validators
 {
     public class CalculateScoreDTOValidator : AbstractValidator<CalculateScoreDTO>
     {
-        private readonly GameLevelOptions _gameLevelOptions;
+        private readonly GameOptions _gameOptions;
 
-        public CalculateScoreDTOValidator(GameLevelOptions gameLevelOptions)
+        public CalculateScoreDTOValidator(IOptions<GameOptions> gameOptions)
         {
-            _gameLevelOptions = gameLevelOptions;
+            _gameOptions = gameOptions.Value;
 
             RuleFor(x => x.GameId)
                 .GreaterThan(0)
@@ -24,14 +25,14 @@ namespace GotExplorer.BLL.Validators
                 .WithMessage("LevelId must be a positive integer.");
 
             RuleFor(x => x.X)
-                .InclusiveBetween(0, _gameLevelOptions.MaxX)
+                .InclusiveBetween(0, _gameOptions.MaxX)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage($"X coordinate must be between 0 and {_gameLevelOptions.MaxX}.");
+                .WithMessage($"X coordinate must be between 0 and {_gameOptions.MaxX}.");
 
             RuleFor(x => x.Y)
-                .InclusiveBetween(0, _gameLevelOptions.MaxY)
+                .InclusiveBetween(0, _gameOptions.MaxY)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage($"Y coordinate must be between 0 and {_gameLevelOptions.MaxY}.");
+                .WithMessage($"Y coordinate must be between 0 and {_gameOptions.MaxY}.");
         }
     }
 }

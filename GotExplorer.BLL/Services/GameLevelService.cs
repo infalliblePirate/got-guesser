@@ -19,12 +19,12 @@ namespace GotExplorer.BLL.Services
         private readonly AppDbContext _appDbContext;
         private readonly UserManager<User> _userManager;
         private readonly IValidator<CalculateScoreDTO> _calculateScoreValidator;
-        private readonly GameLevelOptions _gameLevelOptions;
+        private readonly GameOptions _gameOptions;
         private readonly IMapper _mapper;
 
-        public GameLevelService(IOptions<GameLevelOptions> gameLevelOptions, AppDbContext appDbContext, UserManager<User> userManager, IValidator<CalculateScoreDTO> calculateScoreValidator, IMapper mapper)
+        public GameLevelService(IOptions<GameOptions> gameOptions, AppDbContext appDbContext, UserManager<User> userManager, IValidator<CalculateScoreDTO> calculateScoreValidator, IMapper mapper)
         {
-            _gameLevelOptions = gameLevelOptions.Value;
+            _gameOptions = gameOptions.Value;
             _appDbContext = appDbContext;
             _calculateScoreValidator = calculateScoreValidator;
             _userManager = userManager;
@@ -42,18 +42,21 @@ namespace GotExplorer.BLL.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return GenerateValidationFailure(nameof(userId), ErrorMessages.IncorrectUserId, userId, ErrorCodes.Unauthorized);
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(userId), ErrorMessages.IncorrectUserId, userId, ErrorCodes.Unauthorized);
             }
 
             var game = await _appDbContext.Games.FindAsync(calculateScoreDTO.GameId);
             if (game == null)
             {
-                return GenerateValidationFailure(nameof(calculateScoreDTO.GameId), ErrorMessages.GameServiceGameNotFound, calculateScoreDTO.GameId, ErrorCodes.NotFound);
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(calculateScoreDTO.GameId), ErrorMessages.GameServiceGameNotFound, calculateScoreDTO.GameId, ErrorCodes.NotFound);
             }
 
             if (game.UserId != user.Id)
             {
-                return GenerateValidationFailure(nameof(calculateScoreDTO.GameId), ErrorMessages.IncorrectUserId, calculateScoreDTO.GameId, ErrorCodes.Unauthorized);
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(calculateScoreDTO.GameId), ErrorMessages.IncorrectUserId, calculateScoreDTO.GameId, ErrorCodes.Unauthorized);
             }
 
             var gameLevel = await _appDbContext.GameLevels
@@ -62,13 +65,15 @@ namespace GotExplorer.BLL.Services
             
             if (gameLevel == null)
             {
-                return GenerateValidationFailure(nameof(calculateScoreDTO.LevelId), ErrorMessages.GameLevelServiceGameLevelNotFound, calculateScoreDTO.LevelId, ErrorCodes.NotFound);
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(calculateScoreDTO.LevelId), ErrorMessages.GameLevelServiceGameLevelNotFound, calculateScoreDTO.LevelId, ErrorCodes.NotFound);
             }
 
             var requestedLevel = await _appDbContext.Levels.FindAsync(calculateScoreDTO.LevelId);
             if (requestedLevel == null)
             {
-                return GenerateValidationFailure(nameof(calculateScoreDTO.LevelId), ErrorMessages.LevelServiceLevelNotFound, calculateScoreDTO.LevelId, ErrorCodes.NotFound);
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(calculateScoreDTO.LevelId), ErrorMessages.LevelServiceLevelNotFound, calculateScoreDTO.LevelId, ErrorCodes.NotFound);
             }
 
             int score = CalculateLevelScore(requestedLevel.X, requestedLevel.Y, calculateScoreDTO.X, calculateScoreDTO.Y);
@@ -84,7 +89,7 @@ namespace GotExplorer.BLL.Services
                 var updatedGameLevelDTO = _mapper.Map<UpdateGameLevelDTO>(gameLevel);
                 return new ValidationWithEntityModel<UpdateGameLevelDTO>(updatedGameLevelDTO);
             }
-            catch (Exception ex)
+            catch
             {
                 await transaction.RollbackAsync();
 
@@ -96,15 +101,6 @@ namespace GotExplorer.BLL.Services
             }
         }
 
-        private ValidationWithEntityModel<UpdateGameLevelDTO> GenerateValidationFailure(string fieldName, string errorMessage, object attemptedValue, string errorCode)
-        {
-            return new ValidationWithEntityModel<UpdateGameLevelDTO>(
-                new ValidationFailure(fieldName, errorMessage, attemptedValue)
-                {
-                    ErrorCode = errorCode
-                });
-        }
-
         private double CalculateDistance(double correctX, double correctY, double chosedX, double chosedY)
         {
             return Math.Sqrt(Math.Pow(chosedX - correctX, 2) + Math.Pow(chosedY - correctY, 2));
@@ -114,12 +110,12 @@ namespace GotExplorer.BLL.Services
         {
             double distance = CalculateDistance(correctX, correctY, chosedX, chosedY);
 
-            if (distance <= _gameLevelOptions.ProximityRadius)
-                return _gameLevelOptions.ScoreWithinRadius;
+            if (distance <= _gameOptions.ProximityRadius)
+                return _gameOptions.ScoreWithinRadius;
 
-            double excessDistance = distance - _gameLevelOptions.ProximityRadius;
-            double penalty = excessDistance / _gameLevelOptions.PenaltyStep * _gameLevelOptions.PenaltyPerStep;
-            return Math.Max(0, _gameLevelOptions.ScoreWithinRadius - (int)Math.Round(penalty));
+            double excessDistance = distance - _gameOptions.ProximityRadius;
+            double penalty = excessDistance / _gameOptions.PenaltyStep * _gameOptions.PenaltyPerStep;
+            return Math.Max(0, _gameOptions.ScoreWithinRadius - (int)Math.Round(penalty));
         }
 
     }
