@@ -17,22 +17,22 @@ namespace GotExplorer.BLL.Validators
             RuleFor(x => x.GameId)
                 .GreaterThan(0)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("GameId must be a positive integer.");
+                .WithMessage(ErrorMessages.GameServiceGameNotFound);
 
             RuleFor(x => x.LevelId)
                 .GreaterThan(0)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage("LevelId must be a positive integer.");
+                .WithMessage(ErrorMessages.LevelServiceLevelNotFound);
 
             RuleFor(x => x.X)
                 .InclusiveBetween(0, _gameOptions.MaxX)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage($"X coordinate must be between 0 and {_gameOptions.MaxX}.");
+                .WithMessage(string.Format(ErrorMessages.GameLevelServiceFailedToSaveScore, 0, _gameOptions.MaxX));
 
             RuleFor(x => x.Y)
                 .InclusiveBetween(0, _gameOptions.MaxY)
                 .WithErrorCode(ErrorCodes.Invalid)
-                .WithMessage($"Y coordinate must be between 0 and {_gameOptions.MaxY}.");
+                .WithMessage(string.Format(ErrorMessages.GameLevelServiceFailedToSaveScore, 0, _gameOptions.MaxY));
         }
     }
 }
