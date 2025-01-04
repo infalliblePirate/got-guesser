@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GotExplorer.BLL.Options;
 using Microsoft.Extensions.Options;
+using AutoMapper;
 
 namespace GotExplorer.BLL.Services
 {
@@ -18,39 +19,50 @@ namespace GotExplorer.BLL.Services
         private readonly IValidator<CompleteGameDTO> _completeGameValidator;
         private readonly UserManager<User> _userManager;
         private readonly GameOptions _gameOptions;
+        private readonly IMapper _mapper;
 
-        public GameService(IOptions<GameOptions> gameOptions, AppDbContext appDbContext, UserManager<User> userManager, IValidator<CompleteGameDTO> completeGameValidator)
+        public GameService(
+            IOptions<GameOptions> gameOptions, 
+            AppDbContext appDbContext, 
+            UserManager<User> userManager,
+            IMapper mapper,
+            IValidator<CompleteGameDTO> completeGameValidator)
         {
             _gameOptions = gameOptions.Value;
             _appDbContext = appDbContext;
             _completeGameValidator = completeGameValidator;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        public async Task<ValidationResult> CompleteGameAsync(CompleteGameDTO completeGameDTO)
+        public async Task<ValidationWithEntityModel<GameResultDTO>> CompleteGameAsync(int gameId, int userId)
         {
-            var validationResult = await _completeGameValidator.ValidateAsync(completeGameDTO);
-            if (!validationResult.IsValid)
-            {
-                return validationResult;
-            }
-
             var game = await _appDbContext.Games
                 .Include(g => g.Levels)
-                .FirstOrDefaultAsync(g => g.Id == completeGameDTO.GameId && g.UserId == completeGameDTO.UserId);
+                .FirstOrDefaultAsync(g => g.Id == gameId && g.UserId == userId);
 
             if (game == null)
             {
-                return new ValidationResult(
-                    [
-                        new ValidationFailure(nameof(completeGameDTO.GameId), "Game not found or already completed.")
-                        {
-                            ErrorCode = ErrorCodes.GameNotFound
-                        }
-                    ]);
+                return new ValidationWithEntityModel<GameResultDTO>(
+                    new ValidationFailure(nameof(gameId), ErrorMessages.GameServiceGameNotFound) {  ErrorCode = ErrorCodes.NotFound }
+                );
             }
 
-            //game.Score = game.Levels.Count * 10; // TODO: hardcoded
+            if (game.UserId != userId)
+            {
+                return new ValidationWithEntityModel<GameResultDTO>(
+                    new ValidationFailure(nameof(userId), ErrorMessages.IncorrectUserId) { ErrorCode = ErrorCodes.Unauthorized }
+                );
+            }
+
+            if (game.EndTime != null)
+            {
+                return new ValidationWithEntityModel<GameResultDTO>(
+                    new ValidationFailure(nameof(gameId), ErrorMessages.GameAlreadyCompleted) { ErrorCode = ErrorCodes.GameAlreadyCompleted }
+                );
+            }
+
+            game.EndTime = DateTime.UtcNow;
 
             using var transaction = await _appDbContext.Database.BeginTransactionAsync();
             try
@@ -63,16 +75,17 @@ namespace GotExplorer.BLL.Services
             {
                 await transaction.RollbackAsync();
 
-                return new ValidationResult(
-                    [
-                        new ValidationFailure(nameof(completeGameDTO.GameId), "Failed to complete the game.")
-                        {
-                            ErrorCode = ErrorCodes.GameCompletionFailed
-                        }
-                    ]);
+                return new ValidationWithEntityModel<GameResultDTO>(
+                   new ValidationFailure(nameof(gameId), ErrorMessages.GameServiceFailedToCompleteGame) { ErrorCode = ErrorCodes.GameCompletionFailed }
+                );
             }
 
-            return new ValidationResult();
+            var gameResult = _mapper.Map<GameResultDTO>(game);
+            gameResult.Score = _appDbContext.GameLevels
+                .Where(gl => gl.GameId == game.Id)
+                .Sum(gl => gl.Score) ?? 0;
+
+            return new ValidationWithEntityModel<GameResultDTO>(gameResult);
         }
 
         public async Task<ValidationWithEntityModel<NewGameDTO>> StartGameAsync(string userId)

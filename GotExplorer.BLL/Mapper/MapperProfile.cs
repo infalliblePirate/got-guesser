@@ -66,6 +66,9 @@ namespace GotExplorer.BLL.Mapper
 
             CreateMap<int, Model3D>()
                 .ConstructUsing(src => new Model3D { Id = src});
+
+            CreateMap<Game, GameResultDTO>()
+                .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

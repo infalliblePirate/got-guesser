@@ -23,6 +23,7 @@
 
         public static readonly string GameServiceGameNotFound = "Game not found.";
         public static readonly string GameServiceFailedToCompleteGame = "Failed to complete the game.";
+        public static readonly string GameAlreadyCompleted = "The game has already been completed and cannot be finished again.";
 
         public static readonly string EmailRequired = "Email is required.";
         public static readonly string InvalidEmail = "Email must be a valid email address.";
@@ -39,10 +40,10 @@
 
         public static readonly string UpdateUserImageId = "ImageId must be null or greater than 0.";
 
-        public const string FileCannotBeEmpty = "File cannot be empty.";
-        public const string FileSizeShouldBeLessThan = "File size should be less than {0} MB.";
-        public const string InvalidImage = "Image is invalid.";
-        public const string InvalidModel = "Model is invalid.";
+        public static readonly string FileCannotBeEmpty = "File cannot be empty.";
+        public static readonly string FileSizeShouldBeLessThan = "File size should be less than {0} MB.";
+        public static readonly string InvalidImage = "Image is invalid.";
+        public static readonly string InvalidModel = "Model is invalid.";
 
         public static readonly string FailedToStartTheGame = "Failed to start the game.";
         public static readonly string IncorrectUserId = "User id is incorrect";

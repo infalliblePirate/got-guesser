@@ -6,7 +6,7 @@ namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IGameService
     {
-        Task<ValidationResult> CompleteGameAsync(CompleteGameDTO completeGameDTO);
+        Task<ValidationWithEntityModel<GameResultDTO>> CompleteGameAsync(int gameId, int userId);
         Task<ValidationWithEntityModel<NewGameDTO>> StartGameAsync(string userId);
     }
 }
