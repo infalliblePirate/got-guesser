@@ -86,6 +86,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IModel3DService, Model3DService>();
             builder.Services.AddScoped<ILevelService, LevelService>();
             builder.Services.AddScoped<IGameService, GameService>();
+            builder.Services.AddScoped<IGameLevelService, GameLevelService>();
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
             builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
@@ -108,6 +109,7 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<UploadModel3dDTO>, Model3dValidator>();
             builder.Services.AddScoped<IValidator<CreateLevelDTO>, CreateLevelValidator>();
             builder.Services.AddScoped<IValidator<UpdateLevelDTO>, UpdateLevelValidator>();
+            builder.Services.AddScoped<IValidator<CalculateScoreDTO>, CalculateScoreDTOValidator>();
             builder.Services.AddScoped<IValidator<CompleteGameDTO>, CompleteGameDTOValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
