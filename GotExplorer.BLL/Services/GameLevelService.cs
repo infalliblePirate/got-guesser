@@ -31,7 +31,7 @@ namespace GotExplorer.BLL.Services
             _mapper = mapper;
         }
 
-         public async Task<ValidationWithEntityModel<UpdateGameLevelDTO>> CalculateScoreAsync(string userId, CalculateScoreDTO calculateScoreDTO)
+         public async Task<ValidationWithEntityModel<UpdateGameLevelDTO>> CalculateScoreAsync(CalculateScoreDTO calculateScoreDTO)
         {
             var validationResult = await _calculateScoreValidator.ValidateAsync(calculateScoreDTO);
             if (!validationResult.IsValid)
@@ -39,11 +39,11 @@ namespace GotExplorer.BLL.Services
                 return new ValidationWithEntityModel<UpdateGameLevelDTO>(validationResult);
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(calculateScoreDTO.UserId);
             if (user == null)
             {
                 return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
-                    nameof(userId), ErrorMessages.IncorrectUserId, userId, ErrorCodes.Unauthorized);
+                    nameof(calculateScoreDTO.UserId), ErrorMessages.IncorrectUserId, calculateScoreDTO.UserId, ErrorCodes.Unauthorized);
             }
 
             var game = await _appDbContext.Games.FindAsync(calculateScoreDTO.GameId);
@@ -57,6 +57,12 @@ namespace GotExplorer.BLL.Services
             {
                 return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
                     nameof(calculateScoreDTO.GameId), ErrorMessages.IncorrectUserId, calculateScoreDTO.GameId, ErrorCodes.Unauthorized);
+            }
+
+            if (game.EndTime != null)
+            {
+                return ValidationWithEntityModel<UpdateGameLevelDTO>.GenerateValidationFailure<UpdateGameLevelDTO>(
+                    nameof(calculateScoreDTO.GameId), ErrorMessages.GameAlreadyCompleted, calculateScoreDTO.GameId, ErrorCodes.GameAlreadyCompleted);
             }
 
             var gameLevel = await _appDbContext.GameLevels

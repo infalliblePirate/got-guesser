@@ -23,7 +23,7 @@
 
         public static readonly string GameServiceGameNotFound = "Game not found.";
         public static readonly string GameServiceFailedToCompleteGame = "Failed to complete the game.";
-        public static readonly string GameAlreadyCompleted = "The game has already been completed and cannot be finished again.";
+        public static readonly string GameAlreadyCompleted = "The game has already been completed.";
 
         public static readonly string GameLevelServiceGameLevelNotFound = "Game does not have any levels associated with it.";
         public static readonly string GameLevelServiceFailedToSaveScore = "Failed to save the score for the specified game level.";

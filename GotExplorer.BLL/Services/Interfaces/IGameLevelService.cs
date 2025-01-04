@@ -6,6 +6,6 @@ namespace GotExplorer.BLL.Services.Interfaces
 {
     public interface IGameLevelService
     {
-        Task<ValidationWithEntityModel<UpdateGameLevelDTO>> CalculateScoreAsync(string userId, CalculateScoreDTO calculateScoreDTO);
+        Task<ValidationWithEntityModel<UpdateGameLevelDTO>> CalculateScoreAsync(CalculateScoreDTO calculateScoreDTO);
     }
 }

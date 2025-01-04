@@ -14,6 +14,11 @@ namespace GotExplorer.BLL.Validators
         {
             _gameOptions = gameOptions.Value;
 
+            RuleFor(x => x.UserId)
+                .Must(x => int.TryParse(x, out var val) && val > 0)
+                .WithErrorCode(ErrorCodes.Invalid)
+                .WithMessage(ErrorMessages.GameServiceGameNotFound);
+
             RuleFor(x => x.GameId)
                 .GreaterThan(0)
                 .WithErrorCode(ErrorCodes.Invalid)

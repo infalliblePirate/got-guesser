@@ -17,7 +17,7 @@ namespace GotExplorer.API.Controllers
         public GameController(IGameService gameService, IGameLevelService gameLevelService)
         {
             _gameService = gameService;
-            _gameLevelService = gameLevelService; // DO I NEED IT HERE?
+            _gameLevelService = gameLevelService;
         }
 
 
@@ -50,13 +50,15 @@ namespace GotExplorer.API.Controllers
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="403">User does not have sufficient permissions.</response>
+        /// <response code="404">Game not found.</response>
         /// <response code="409">The game has already been completed and cannot be finished again.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>      
         [HttpPut("{id:int}/complete")]
-        [ProducesResponseType(typeof(NewGameDTO), 200)]
+        [ProducesResponseType(typeof(GameResultDTO), 200)]
         [ProducesResponseType(typeof(ValidationResult), 400)]
         [ProducesResponseType(typeof(ValidationResult), 401)]
         [ProducesResponseType(typeof(ValidationResult), 403)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
         [ProducesResponseType(typeof(ValidationResult), 409)]
         [ProducesResponseType(typeof(ValidationResult), 500)]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -74,18 +76,23 @@ namespace GotExplorer.API.Controllers
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">Authentication failed due to invalid JWT.</response>
         /// <response code="403">User does not have sufficient permissions.</response>
+        /// <response code="404">Game or level not found.</response>
+        /// <response code="409">The game has already been completed and the level cannot be finished again.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>
-        [HttpPut("calculateScore")]
+        [HttpPut("{id:int}/calculateScore")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(UpdateGameLevelDTO), 200)]
         [ProducesResponseType(typeof(ValidationResult), 400)]
         [ProducesResponseType(typeof(ValidationResult), 401)]
         [ProducesResponseType(typeof(ValidationResult), 403)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 409)]
         [ProducesResponseType(typeof(ValidationResult), 500)]
-        public async Task<IActionResult> CalculateScore([FromBody] CalculateScoreDTO calculateScoreDTO)
+        public async Task<IActionResult> CalculateScore([FromRoute] int id, [FromBody] CalculateScoreDTO calculateScoreDTO)
         {
-            var userId = User.GetClaimValue("Id");
-            var result = await _gameLevelService.CalculateScoreAsync(userId, calculateScoreDTO);
+            calculateScoreDTO.UserId = User.GetClaimValue("Id");
+            calculateScoreDTO.GameId = id;
+            var result = await _gameLevelService.CalculateScoreAsync(calculateScoreDTO);
             return result.ToActionResult<UpdateGameLevelDTO>();
         }
     }
