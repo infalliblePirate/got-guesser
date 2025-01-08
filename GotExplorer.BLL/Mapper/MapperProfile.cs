@@ -73,6 +73,10 @@ namespace GotExplorer.BLL.Mapper
 
             CreateMap<Game, GameResultDTO>()
                 .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Id));
+
+            CreateMap<LeaderboardRecord, LeaderboardRecordDTO>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score));
         }
     }
 }

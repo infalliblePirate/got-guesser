@@ -8,6 +8,7 @@
         public const string Unauthorized = nameof(Unauthorized);
         public const string Invalid = nameof(Invalid);
         public const string Forbidden = nameof(Forbidden);
+        public const string InternalError = nameof(InternalError);
 
         public const string UserCreationFailed = nameof(UserCreationFailed);
         public const string RoleAssignmentFailed = nameof(RoleAssignmentFailed);
@@ -29,6 +30,8 @@
         public const string LevelDeletionFailed = nameof(LevelDeletionFailed);
 
         public const string GameLevelUpdateFailed = nameof(GameLevelUpdateFailed);
+
+        public const string LeaderboardUpdateFailed = nameof(LeaderboardUpdateFailed);
 
         public const string GameStartFailed = nameof(GameStartFailed);
         public const string GameCompletionFailed = nameof(GameCompletionFailed);

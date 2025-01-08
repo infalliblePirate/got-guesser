@@ -65,6 +65,12 @@ namespace GotExplorer.DAL
 
             builder.HasPostgresEnum<GameType>();
 
+            builder.Entity<LeaderboardRecord>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
+
             Guid defaultImageId = Guid.NewGuid();
             builder.Entity<User>()
                 .Property(e => e.ImageId)
@@ -80,5 +86,6 @@ namespace GotExplorer.DAL
         public DbSet<Model3D> Models3D { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<GameLevel> GameLevels { get; set; }
+        public DbSet<LeaderboardRecord> LeaderboardRecords { get; set; }
     }
 }
