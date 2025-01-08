@@ -112,7 +112,6 @@ namespace GotExplorer.API
             builder.Services.AddScoped<IValidator<UpdateLevelDTO>, UpdateLevelValidator>();
             builder.Services.AddScoped<IValidator<CalculateScoreDTO>, CalculateScoreDTOValidator>();
             builder.Services.AddScoped<IValidator<CompleteGameDTO>, CompleteGameDTOValidator>();
-            builder.Services.AddScoped<IValidator<SubmitScoreDTO>, SubmitScoreDTOValidator>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

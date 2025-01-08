@@ -47,7 +47,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.GameLevel", b =>
@@ -65,7 +65,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("LevelId");
 
-                    b.ToTable("GameLevels");
+                    b.ToTable("GameLevels", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Image", b =>
@@ -92,40 +92,16 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e273ef6c-887e-45a2-9ed4-21b04286aca5"),
+                            Id = new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"),
                             Name = "",
                             Path = "",
                             Version = 0u
                         });
-                });
-
-            modelBuilder.Entity("GotExplorer.DAL.Entities.LeaderboardRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("LeaderboardRecords");
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Level", b =>
@@ -155,7 +131,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Levels");
+                    b.ToTable("Levels", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.Model3D", b =>
@@ -184,7 +160,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Models3D");
+                    b.ToTable("Models3D", (string)null);
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
@@ -212,7 +188,7 @@ namespace GotExplorer.DAL.Migrations
                     b.Property<Guid>("ImageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValue(new Guid("e273ef6c-887e-45a2-9ed4-21b04286aca5"));
+                        .HasDefaultValue(new Guid("eaa88c90-9c31-4e69-aa13-7227f83d897d"));
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -302,7 +278,7 @@ namespace GotExplorer.DAL.Migrations
 
                     b.HasIndex("ModelsId");
 
-                    b.ToTable("LevelModel3D");
+                    b.ToTable("LevelModel3D", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -436,17 +412,6 @@ namespace GotExplorer.DAL.Migrations
                     b.Navigation("Game");
 
                     b.Navigation("Level");
-                });
-
-            modelBuilder.Entity("GotExplorer.DAL.Entities.LeaderboardRecord", b =>
-                {
-                    b.HasOne("GotExplorer.DAL.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GotExplorer.DAL.Entities.User", b =>
