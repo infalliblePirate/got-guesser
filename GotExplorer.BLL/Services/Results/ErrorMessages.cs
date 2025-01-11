@@ -58,5 +58,7 @@
 
         public static readonly string InvalidScore = "Score must be zero or greater.";
         public static readonly string InvalidLimit = "Limit must be one or greater.";
+        public static readonly string InvalidLeaderboardSortBy = "SortBy must be a valid enum value.";
+        public static readonly string InvalidLeaderboardOrderBy = "OrderBy must be a valid enum value.";
     }
 }

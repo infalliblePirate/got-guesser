@@ -10,54 +10,57 @@ using GotExplorer.DAL;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using GotExplorer.BLL.Extensions;
+using System.Linq.Expressions;
+using System;
 
 namespace GotExplorer.BLL.Services
 {
     public class LeaderboardService : ILeaderboardService
     {
         private readonly AppDbContext _appDbContext;
-
-        public LeaderboardService(AppDbContext appDbContext)
+        private readonly IValidator<LeaderboardRequestDTO> _leaderboardRequestValidator;
+        public LeaderboardService(AppDbContext appDbContext, IValidator<LeaderboardRequestDTO> leaderboardRequestValidator)
         {
             _appDbContext = appDbContext;
+            _leaderboardRequestValidator = leaderboardRequestValidator;
         }
 
 
         public async Task<ValidationWithEntityModel<List<LeaderboardRecordDTO>>> GetLeaderboardAsync(LeaderboardRequestDTO requestDTO)
         {
+            var validationResult = await _leaderboardRequestValidator.ValidateAsync(requestDTO);
+            if (!validationResult.IsValid )
+            {
+                return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(validationResult);
+            }
             try
             {
-                var scores = await _appDbContext.Users
-                    .Join(_appDbContext.Games.Where(game => game.EndTime != null),
-                        user => user.Id,
-                        game => game.UserId,
-                        (user, game) => new { UserId = user.Id, GameId = game.Id })
+                var leaderboard = _appDbContext.Games
+                    .Where(game => game.EndTime != null)
                     .Join(_appDbContext.GameLevels,
-                        userGame => userGame.GameId,
+                        game => game.Id,
                         gl => gl.GameId,
-                        (userGame, gl) => new { userGame.UserId, gl.Score })
-                    .GroupBy(x => x.UserId)
-                    .Select(g => new
+                        (game, gl) => new { game.UserId, gl.Score, game.StartTime, game.EndTime})
+                    .GroupBy(x => new { x.UserId, x.StartTime, x.EndTime })
+                    .Select(g => new LeaderboardRecordDTO
                     {
-                        UserId = g.Key,
-                        Score = g.Sum(x => x.Score ?? 0)
+                        UserId = g.Key.UserId,
+                        Score = g.Sum(x => x.Score ?? 0),
+                        StartTime = g.Key.StartTime,
+                        EndTime = g.Key.EndTime!.Value,
                     })
                     .Where(g => g.Score > 0)
-                    .OrderByDescending(g => g.Score)
-                    .Take(requestDTO.Limit)
-                    .ToListAsync();
-
-                var leaderboardRecords = scores
-                    .Select(score => new LeaderboardRecordDTO
-                    {
-                        UserId = score.UserId,
-                        Score = score.Score
-                    })
+                    .AsEnumerable()
+                    .GroupBy(g => g.UserId)
+                    .Select(g => g.MaxBy(x => x.Score))
+                    .OrderByDynamic(GetSortBy(requestDTO.SortBy), requestDTO.OrderBy)
+                    .TakeOrDefault(requestDTO.Limit)
                     .ToList();
 
-                return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(leaderboardRecords);
+                return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(leaderboard);
             }
-            catch
+            catch (Exception ex)
             {
                 return new ValidationWithEntityModel<List<LeaderboardRecordDTO>>(
                     new ValidationFailure(nameof(requestDTO), ErrorMessages.LeaderboardServiceInternalError, requestDTO)
@@ -65,6 +68,15 @@ namespace GotExplorer.BLL.Services
                         ErrorCode = ErrorCodes.InternalError
                     });
             }
+        }
+
+        private Func<LeaderboardRecordDTO, object> GetSortBy(LeaderboardSortBy sortBy)
+        {
+            return sortBy switch
+            {
+                LeaderboardSortBy.Time => x => x.EndTime - x.StartTime,
+                LeaderboardSortBy.Score => x => x.Score,
+            };
         }
     }
 }

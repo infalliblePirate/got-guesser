@@ -31,8 +31,6 @@
 
         public const string GameLevelUpdateFailed = nameof(GameLevelUpdateFailed);
 
-        public const string LeaderboardUpdateFailed = nameof(LeaderboardUpdateFailed);
-
         public const string GameStartFailed = nameof(GameStartFailed);
         public const string GameCompletionFailed = nameof(GameCompletionFailed);
         public const string GameAlreadyCompleted = nameof(GameAlreadyCompleted);

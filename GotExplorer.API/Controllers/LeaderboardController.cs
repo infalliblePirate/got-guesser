@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections;
 
 namespace GotExplorer.API.Controllers
 {
@@ -21,20 +22,15 @@ namespace GotExplorer.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves the leaderboard, with the option to limit the number of records. 
+        /// Retrieves the leaderboard, with optional query parameters for limiting, sorting and ordering the records. By default, it orders by score in descending order.
         /// </summary>
-        /// <param name="requestDTO">The DTO containing query parameters such as the limit for the number of leaderboard records to fetch.</param>
+        /// <param name="requestDTO">The DTO containing query parameters to fetch leaderboard data.</param>
         /// <response code="200">The leaderboard data was successfully retrieved.</response>
         /// <response code="400">Invalid request data (e.g., invalid limit value).</response>
-        /// <response code="404">No leaderboard records found for the given limit.</response>
-        /// <response code="409">The score update failed due to a conflict with another modification of the leaderboard record.</response>
         /// <response code="500">An unexpected error occurred on the server.</response>
         [HttpGet]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<LeaderboardRecordDTO>),200)]
         [ProducesResponseType(typeof(ValidationResult), 400)]
-        [ProducesResponseType(typeof(ValidationResult), 401)]
-        [ProducesResponseType(typeof(ValidationResult), 404)]
-        [ProducesResponseType(typeof(ValidationResult), 409)]
         [ProducesResponseType(typeof(ValidationResult), 500)]
         public async Task<IActionResult> GetLeaderboard([FromQuery] LeaderboardRequestDTO requestDTO)
         {
