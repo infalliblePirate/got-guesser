@@ -37,5 +37,27 @@ namespace GotExplorer.API.Controllers
             var result = await _leaderboardService.GetLeaderboardAsync(requestDTO);
             return result.ToActionResult();
         }
+
+        /// <summary>
+        /// Retrieves the leaderboard data for a single player, including the player's rank, with optional query parameters for sorting and ordering. 
+        /// By default, it orders by score in descending order.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <param name="queryParams">The DTO containing query parameters to fetch data.</param>
+        /// <response code="200">The leaderboard data was successfully retrieved.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="404">User not found.</response>
+        /// <response code="500">An unexpected error occurred on the server.</response>
+        [HttpGet("user/{id:int}")]
+        [ProducesResponseType(typeof(LeaderboardUserDTO), 200)]
+        [ProducesResponseType(typeof(ValidationResult), 400)]
+        [ProducesResponseType(typeof(ValidationResult), 404)]
+        [ProducesResponseType(typeof(ValidationResult), 500)]
+        public async Task<IActionResult> GetUserLeaderboard([FromRoute] int id, [FromQuery] LeaderboardUserRequestDTO queryParams)
+        {
+            queryParams.UserId = id;
+            var result = await _leaderboardService.GetUserLeaderboardAsync(queryParams);
+            return result.ToActionResult();
+        }
     }
 }

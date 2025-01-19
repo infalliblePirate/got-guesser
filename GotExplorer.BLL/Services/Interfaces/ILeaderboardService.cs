@@ -7,5 +7,6 @@ namespace GotExplorer.BLL.Services.Interfaces
     public interface ILeaderboardService
     {
         Task<ValidationWithEntityModel<List<LeaderboardRecordDTO>>> GetLeaderboardAsync(LeaderboardRequestDTO requestDTO);
+        Task<ValidationWithEntityModel<LeaderboardUserDTO>> GetUserLeaderboardAsync(LeaderboardUserRequestDTO requestDTO);
     }
 }
