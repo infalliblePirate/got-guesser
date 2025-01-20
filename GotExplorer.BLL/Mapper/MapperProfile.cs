@@ -73,8 +73,6 @@ namespace GotExplorer.BLL.Mapper
 
             CreateMap<Game, GameResultDTO>()
                 .ForMember(dest => dest.GameId, opt => opt.MapFrom(src => src.Id));
-
-            CreateMap<LeaderboardRecordDTO, LeaderboardUserDTO>().ReverseMap();
         }
     }
 }
